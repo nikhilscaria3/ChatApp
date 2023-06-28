@@ -68,7 +68,7 @@ app.post('/createUser', async (req, res) => {
     from: process.env.SMTP_USER,
     to: user.email,
     subject: 'New Message Notification',
-    html: `<p>You have received a new message. Click <a href="http://localhost:4000/chat?identifier=${identifier}">here</a> to view the chat.</p>`,
+    html: `<p>You have received a new message. Click <a href="http://16.170.250.38:4000/chat?identifier=${identifier}">here</a> to view the chat.</p>`,
   };
 
   transporter.sendMail(emailOptions, (err, info) => {
