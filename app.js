@@ -18,7 +18,7 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/Wildlife?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority")
   .then(() => {
     console.log("Connected to MongoDB");
     app.listen(4001, () => {
