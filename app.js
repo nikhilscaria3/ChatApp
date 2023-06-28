@@ -22,7 +22,7 @@ mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mo
   .then(() => {
     console.log("Connected to MongoDB");
     app.listen(4000, () => {
-      console.log('Server listening on port 4000');
+      console.log('Server listening on port 4001');
     })
   })
   .catch(() => {
