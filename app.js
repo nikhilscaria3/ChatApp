@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/Wildlife?retryWrites=true&w=majority")
   .then(() => {
     console.log("Connected to MongoDB");
-    app.listen(4000, () => {
+    app.listen(4001, () => {
       console.log('Server listening on port 4001');
     })
   })
