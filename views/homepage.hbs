@@ -3,87 +3,38 @@
 
 <head>
     <title>Chat App - User Details</title>
-    <style>
-        /* CSS styles */
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
+    <style>
+        /* Global Styles */
         body {
-            font-family: cursive, sans-serif;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
+            background: white
         }
 
         .container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .form-container {
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            padding: 6rem;
-            text-align: center;
-            margin: 150px;
-        }
-
-        h1 {
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-
-        form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        input[type="submit"] {
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #0069d9;
-        }
-
-        .image-container {
-
+            align-items: center;
+            justify-content: center;
             position: relative;
+            top: 7rem;
         }
 
-        .image-container img {
-            width: 100%;
-            height: 51rem;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-        }
 
         .text-box {
 
-            width: 293px;
-            height: 23px;
+       
             border: 3px solid #000;
             overflow: hidden;
             display: flex;
-            position: absolute;
-            margin: 5rem;
-            margin-left: 12rem;
+          
 
         }
 
@@ -102,8 +53,45 @@
                 transform: translateX(-100%);
             }
         }
-    </style>
-    <style>
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 100%;
+        }
+
+
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .text-box {
+                margin-bottom: 10px;
+            }
+
+            .travel-text {
+                font-size: 20px;
+            }
+
+            .text {
+                font-size: 16px;
+            }
+        }
+
+        /* Form Validation Styles */
         .form-error {
             color: red;
             margin-top: 5px;
@@ -111,46 +99,70 @@
 
         span[id="name-error"],
         span[id="email-error"],
-        span[id="mobile-error"],
-        {
-        display: flex;
-        align-items: left;
-        flex-direction: column;
-        color: red;
+        span[id="mobile-error"] {
+            display: flex;
+            align-items: left;
+            flex-direction: column;
+            color: red;
+        }
+
+        @media (max-width: 575px) {
+            .col-lg-6 {
+                margin-bottom: 1.5rem;
+            }
+
+            .image-container {
+                text-align: center;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="text-box">
-        <span class="travel-text">Welcome to New Way of Communication</span>
-    </div>
-
-
     <div class="container">
-        <div class="form-container">
-            <p class="text">Enter the Details<br> to Start Chat</p>
+        <div class="row">
+            <div class="col-12 col-lg-6  p-5"style="background-color: #e3e6e9!important;">
+                <div class="text-box">
+                    <span class="travel-text">Welcome to the New Way of Communication</span>
+                </div>
 
-            <form action="/createUser" method="POST">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
-                <span id="name-error"></span><br>
+                <div class="form-container">
+                    <p class="text">Enter the Details to Start Chat</p>
 
-                <label for="name" class="form-label">Receiver Email</label>
-                <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
-                <span id="email-error"></span><br>
+                    <form action="/createUser" method="POST" onsubmit="return validateForm()">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" onkeyup="validateName()"
+                                required>
+                            <span id="name-error"></span>
+                        </div>
 
-                <label for="mobile" class="form-label">Mobile</label>
-                <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
-                <span id="mobile-error"></span><br>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" onkeyup="validateEmail()">
+                            <span id="email-error"></span>
+                        </div>
 
-                <input type="submit" value="Submit">
-            </form>
-        </div>
-        <div class="image-container">
-            <img src="pexels-helena-lopes-711009.jpg" alt="Image">
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label">Mobile</label>
+                            <input type="tel" name="mobile" id="mobile" class="form-control" onkeyup="validateMobile()"
+                                required>
+                            <span id="mobile-error"></span>
+                        </div>
+
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 d-flex align-items-center">
+                <div class="image-container">
+                    <img src="pexels-helena-lopes-711009.jpg" alt="Image" class="img-fluid">
+                </div>
+            </div>
         </div>
     </div>
+
 
 
     <script>
