@@ -13,7 +13,7 @@
 
   <style>
     body {
-      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      font-family: cursive, sans-serif;
       margin: 0;
       padding: 0;
       background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
@@ -114,6 +114,8 @@
     .head {
       justify-content: center;
       text-align: center;
+      white-space: nowrap;
+      font-size: 1rem;
 
     }
 
@@ -216,6 +218,9 @@
       .offcanvas-lg {
         display: none;
       }
+      .head{
+        font-size: 3rem;
+      }
     }
   </style>
 
@@ -275,7 +280,7 @@
     <section id="content">
       <!-- NAVBAR -->
       <nav>
-         <h1 class="head">Chat App</h1>
+        <h1 class="head">Chat App</h1>
         <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive"><i
             class="fa-sharp fa-solid fa-bars"></i></button>
