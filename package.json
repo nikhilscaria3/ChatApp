@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "body": "^5.1.0",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
@@ -15,6 +16,8 @@
     "mutter": "^1.0.1",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
+    "otp-generator": "^4.0.1",
+    "parser": "^0.1.4",
     "socket.io": "^4.7.0",
     "uuid": "^9.0.0"
   }
