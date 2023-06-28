@@ -18,10 +18,18 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/chatapp', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/Wildlife?retryWrites=true&w=majority")
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(4000, () => {
+      console.log('Server listening on port 4000');
+    })
+  })
+  .catch(() => {
+    console.log("Error connecting to MongoDB");
+  });
+
+
 app.use(express.urlencoded({ extended: true }));
 // const messageroutes = require('./routes/messageRoutes')
 // app.use('/', messageroutes)
