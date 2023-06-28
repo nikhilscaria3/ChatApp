@@ -115,8 +115,11 @@
             <p class="text">Enter the Receiver Details<br> to Start Chat</p>
 
             <form action="/createUser" method="POST">
+                <label for="name" class="form-label">Name</label>
                 <input type="text" name="name" placeholder="Name" required><br>
+                <label for="email" class="form-label">Receiver Email</label>
                 <input type="email" name="email" placeholder="Email" required><br>
+                <label for="mobile" class="form-label">Mobile</label>
                 <input type="tel" name="mobile" placeholder="Mobile Number" required><br>
                 <input type="submit" value="Submit">
             </form>
