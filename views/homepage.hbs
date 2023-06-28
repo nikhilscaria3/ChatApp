@@ -3,7 +3,7 @@
 
 <head>
     <title>Chat App - User Details</title>
-    <style>
+   <style>
         /* CSS styles */
 
         body {
@@ -101,10 +101,25 @@
             }
         }
     </style>
+    <style>
+        .form-error {
+            color: red;
+            margin-top: 5px;
+        }
+
+        span[id="name-error"],
+        span[id="email-error"],
+        span[id="mobile-error"],
+        {
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+        color: red;
+        }
+    </style>
 </head>
 
 <body>
-
     <div class="text-box">
         <span class="travel-text">Welcome to New Way of Communication</span>
     </div>
@@ -112,15 +127,21 @@
 
     <div class="container">
         <div class="form-container">
-            <p class="text">Enter the Receiver Details<br> to Start Chat</p>
+            <p class="text">Enter the Details<br> to Start Chat</p>
 
             <form action="/createUser" method="POST">
                 <label for="name" class="form-label">Name</label>
-                <input type="text" name="name" placeholder="Name" required><br>
-                <label for="email" class="form-label">Receiver Email</label>
-                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
+                <span id="name-error"></span><br>
+
+                <label for="name" class="form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
+                <span id="email-error"></span><br>
+
                 <label for="mobile" class="form-label">Mobile</label>
-                <input type="tel" name="mobile" placeholder="Mobile Number" required><br>
+                <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
+                <span id="mobile-error"></span><br>
+
                 <input type="submit" value="Submit">
             </form>
         </div>
@@ -128,6 +149,93 @@
             <img src="pexels-helena-lopes-711009.jpg" alt="Image">
         </div>
     </div>
+
+
+    <script>
+
+        function validateEmail() {
+            var emailInput = document.getElementById('email');
+            var emailError = document.getElementById('email-error');
+            var emailValue = emailInput.value.trim();
+
+            // Define the regex pattern for email validation
+            var emailPattern = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+            if (emailValue.length === 0 || !emailPattern.test(emailValue)) {
+                emailError.innerHTML = 'Email is required or invalid.';
+                emailInput.classList.add('is-invalid');
+                emailInput.classList.remove('is-valid');
+                setTimeout(function () {
+                    emailError.innerHTML = '';
+                    emailInput.classList.remove('is-invalid');
+                }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
+                return false;
+            } else {
+                emailError.innerHTML = '';
+                emailInput.classList.add('is-valid');
+                emailInput.classList.remove('is-invalid');
+            }
+        }
+
+
+        function validateName() {
+            var nameInput = document.getElementById('name');
+            var nameError = document.getElementById('name-error');
+            var nameValue = nameInput.value.trim();
+
+            if (nameValue.length === 0) {
+                nameError.innerHTML = 'Name is required or invalid.';
+                nameInput.classList.add('is-invalid');
+                nameInput.classList.remove('is-valid');
+                setTimeout(function () {
+                    nameError.innerHTML = '';
+                    nameInput.classList.remove('is-invalid');
+                }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
+                return false;
+            } else {
+                nameError.innerHTML = '';
+                nameInput.classList.add('is-valid');
+                nameInput.classList.remove('is-invalid');
+            }
+        }
+
+
+        function validateMobile() {
+            var mobileInput = document.getElementById('mobile');
+            var mobileError = document.getElementById('mobile-error');
+            var mobileValue = mobileInput.value.trim();
+
+            if (mobileValue.length != 10) {
+                mobileError.innerHTML = 'Mobile number must be exactly 10 digits';
+                mobileInput.classList.add('is-invalid');
+                mobileInput.classList.remove('is-valid');
+                setTimeout(function () {
+                    mobileError.innerHTML = '';
+                    mobileInput.classList.remove('is-invalid');
+                }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
+                return false;
+            } else {
+                mobileError.innerHTML = '';
+                mobileInput.classList.add('is-valid');
+                mobileInput.classList.remove('is-invalid');
+            }
+        }
+
+
+
+        function validateForm() {
+            validateName();
+            validateEmail();
+            validateMobile();
+
+            var invalidInputs = document.querySelectorAll('.is-invalid');
+            if (invalidInputs.length > 0) {
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 
 </html>
