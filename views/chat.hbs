@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Chat App - Chat Page</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
+  <style>
+    body {
+      font-family: cursive, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      /* Adjust the height as needed */
+    }
+
+
+    #messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-bottom: 10px;
+    }
+
+    #messages::-webkit-scrollbar {
+      display: none;
+      /* Hide the scroll line */
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .message p {
+      margin: 0;
+    }
+
+    #message-form {
+      margin-top: 20px;
+    }
+
+    #message-form input[type="text"],
+    #message-form button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    #message-form input[type="text"] {
+      width: 150px;
+      margin-right: 10px;
+    }
+
+    #message-form input[type="text"]::placeholder {
+      color: #aaaaaa;
+    }
+
+    #message-form button {
+      background-color: #4caf50;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    #message-form button:hover {
+      background-color: #45a049;
+    }
+
+    .tick {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-left: 5px;
+      color: #007bff;
+    }
+
+    .tick.delivered {
+      background-color: #007bff;
+    }
+
+    .message p {
+      margin: 0;
+    }
+
+    .message {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 5px;
+      color: #070707;
+      font-size: 12px;
+    }
+
+    .head {
+      justify-content: center;
+      text-align: center;
+
+
+    }
+  </style>
+
+
+</head>
+
+<body>
+  <h1 class="head">Chat App</h1>
+  <div class="container">
+    <div id="messages">
+      {{#each messages}}
+      <div class="message">
+
+        <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
+        {{#with (lookup ../formattedTimes @index)}}
+        <div class="message-info">
+          <p>{{day}}, {{time}}</p>
+          <i class="fa-solid fa-check-double tick"></i>
+        </div>
+        {{/with}}
+      </div>
+      {{/each}}
+    </div>
+
+
+    <form id="message-form" action="">
+      <input id="sender" type="text" value="user">
+      <input id="senderid" type="text" value="{{identifier}}">
+      <input id="content" type="text" placeholder="Type your message">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    const socket = io();
+
+    const messageForm = document.getElementById('message-form');
+    const contentInput = document.getElementById('content');
+    const senderInput = document.getElementById('sender').value;
+    const senderIdInput = document.getElementById('senderid').value;
+
+    messageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const content = contentInput.value.trim();
+      if (content) {
+        const message = {
+          sender: senderInput,
+          content: content,
+          senderid: senderIdInput
+        };
+
+        socket.emit('chat message', message);
+        contentInput.value = '';
+      }
+    });
+
+    socket.on('chat message', (message) => {
+      appendMessage(message);
+    });
+
+    const currentDate = new Date();
+    const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+
+    // Format the temporary date and time
+    const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
+    const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+
+
+
+    function appendMessage(message) {
+      const messagesDiv = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.innerHTML = `
+  <p><strong>${message.sender}:</strong> ${message.content}</p>
+  <div class="message-info">
+ 
+    <span class="temporary-time">${temporaryTime}</span><br>
+       <i class="fa-solid fa-check-double tick"></i>
+  </div>
+`;
+      messagesDiv.appendChild(messageDiv);
+    }
+
+  </script>
+</body>
+
+</html>
