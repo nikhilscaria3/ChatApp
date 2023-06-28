@@ -4,6 +4,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 const dotenv = require('dotenv');
+const fs = require('fs');
 dotenv.config({ path: path.join(__dirname, "config/config.env") });
 const { v4: uuid } = require('uuid');
 
@@ -49,23 +50,31 @@ app.post('/createUser', async (req, res) => {
   const user = new chatuser({ name, email, mobile, identifier });
   await user.save();
 
+
+  const filePath = './views/email.hbs';
+
+  console.log(filePath);
+
+  const htmlContent = fs.readFileSync(filePath, 'utf-8');
+  const htmlEmail = htmlContent.replace('{{identifier}}', identifier);
+  console.log(htmlEmail);
   // Send an email to the user with the chat link
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     service: 'gmail',
     port: 587,
-    secure: true,
+    secure: false,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     }
   });
-
+  
   const emailOptions = {
     from: process.env.SMTP_USER,
     to: user.email,
     subject: 'New Message Notification',
-    html: `<p>You have received a new message. Click <a href="http://16.170.250.38:4000/chat?identifier=${identifier}">here</a> to view the chat.</p>`,
+    html: htmlEmail
   };
 
   transporter.sendMail(emailOptions, (err, info) => {
@@ -81,29 +90,18 @@ app.post('/createUser', async (req, res) => {
 });
 
 
-
-
-app.get('/homepage', async (req, res) => {
+app.get('/home', async (req, res) => {
   res.render('homepage');
 });
 
-app.get('/api/messages', async (req, res) => {
-  try {
-    // Retrieve the messages from the database
-    const messages = await Message.find();
-
-    // Send the messages as a response
-    res.json({ messages });
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    res.status(500).json({ error: 'Failed to fetch messages' });
-  }
+app.get('/homepage', async (req, res) => {
+  res.render('chat');
 });
 
 app.get('/chat', async (req, res) => {
   const { identifier } = req.query;
   const messages = await Message.find({ senderid: identifier });
-  
+  const users = await chatuser.find({})
   const formattedTimes = messages.map((message) => {
     const formattedTime = message.createdAt.toLocaleString('en-IN', {
       month: 'short',
@@ -111,12 +109,14 @@ app.get('/chat', async (req, res) => {
       hour: 'numeric',
       minute: 'numeric'
     });
+
+    console.log(formattedTime);
     const [day, time] = formattedTime.split(', ');
     return { day, time };
   });
-  
+
   console.log("formattedTimes:", formattedTimes);
-  res.render('chat', { identifier, messages, formattedTimes });
+  res.render('chat', { identifier, messages, users, formattedTimes });
 });
 
 
