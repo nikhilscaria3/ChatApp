@@ -267,7 +267,7 @@
         <div class="modal-body">
           <form action="/createUser" method="POST">
             <label for="name" class="form-label">Receiver Name</label>
-            <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
+            <input type="text" id="username" name="name" class="form-input" onkeyup="validateName()" required>
             <span id="name-error"></span><br>
 
             <label for="name" class="form-label">Receiver Email</label>
@@ -375,6 +375,65 @@
       </div>
   </div>
   </section>
+  <script>
+    function validateEmail() {
+      var emailinput = document.getElementById('email');
+      var emailError = document.getElementById('email-error');
+      var emailValue = emailinput.value.trim();
+      var emailPattern = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+      if (emailValue.length === 0 || !emailPattern.test(emailValue)) {
+        emailError.innerHTML = 'Email is required or invalid.';
+        emailinput.classList.add('is-invalid');
+        emailinput.classList.remove('is-valid');
+        setTimeout(function () {
+          emailError.innerHTML = '';
+          emailinput.classList.remove('is-invalid');
+        }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
+        return false;
+      } else {
+        emailError.innerHTML = '';
+        emailinput.classList.add('is-valid');
+        emailinput.classList.remove('is-invalid');
+      }
+    }
+
+
+    function validateName() {
+      var nameInput = document.getElementById('username');
+      var nameError = document.getElementById('name-error');
+      var nameValue = nameInput.value.trim();
+
+      if (nameValue.length === 0) {
+        nameError.innerHTML = 'Name is required or invalid.';
+        nameInput.classList.add('is-invalid');
+        nameInput.classList.remove('is-valid');
+        setTimeout(function () {
+          nameError.innerHTML = '';
+          nameInput.classList.remove('is-invalid');
+        }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
+        return false;
+      } else {
+        nameError.innerHTML = '';
+        nameInput.classList.add('is-valid');
+        nameInput.classList.remove('is-invalid');
+      }
+    }
+
+
+    function validateForm() {
+      validateName();
+      validateEmail();
+
+
+      var invalidInputs = document.querySelectorAll('.is-invalid');
+      if (invalidInputs.length > 0) {
+        return false;
+      }
+
+      return true;
+    }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
