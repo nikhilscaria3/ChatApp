@@ -88,6 +88,11 @@ app.get('/logout', async (req, res) => {
   res.redirect('/')
 })
 
+app.get('/button', async (req, res) => {
+  res.render('button')
+})
+
+
 
 app.post('/createUser', async (req, res) => {
   const { name, email, mobile, users } = req.body;
@@ -146,8 +151,6 @@ app.get('/', async (req, res) => {
   req.session.message = '';
 
   try {
-   
-
     // Render the homepage template and pass the session variables and users
     res.render('homepage', { loggedIn, username, usersession, message });
   } catch (error) {

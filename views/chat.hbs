@@ -251,28 +251,6 @@
     #content nav form {
       display: none;
     }
-
-    .is-valid {
-      border-color: green;
-    }
-
-    .is-invalid {
-      border-color: red;
-    }
-
-    .form-error {
-      color: red;
-      margin-top: 5px;
-    }
-
-    span[id="name-error"],
-    span[id="email-error"],
-    span[id="mobile-error"] {
-      display: flex;
-      align-items: left;
-      flex-direction: column;
-      color: red;
-    }
   </style>
 
 </head>
@@ -283,23 +261,23 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Add User</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form action="/createUser" method="POST">
-            <label for="name" class="form-label">Receiver Name</label>
-            <input type="text" id="username" name="name" class="form-input" onkeyup="validateName()" required>
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
             <span id="name-error"></span><br>
 
-            <label for="name" class="form-label">Receiver Email</label>
+            <label for="name" class="form-label">Email</label>
             <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
             <span id="email-error"></span><br>
 
-            <label for="mobile" class="form-label">Receiver Mobile</label>
+            <label for="mobile" class="form-label">Mobile</label>
             <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
             <span id="mobile-error"></span><br>
-            <input type="hidden" name="users" value="{{userSession}}">
+            <input type="text" name="users" value="{{userSession}}">
             <input type="submit" value="Submit">
           </form>
         </div>
@@ -331,8 +309,12 @@
     <section id="content">
       <!-- NAVBAR -->
       <nav>
-        {{!-- <h1 class="head">Chat App</h1> --}}
-        <a class="head" href="/homepage">Chat App</a>
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="/chatApp (1).png" alt="Logo" width="30" height="34" class="d-inline-block align-text-top" style="    margin: auto;
+    margin-top: 1px;">
+          <span class="mx-2" style="font-size: 2rem;">ChatApp
+          </span>
+        </a>
         <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive"><i
             class="fa-sharp fa-solid fa-bars"></i></button>
@@ -359,10 +341,10 @@
           </div>
         </div>
 
-        <i class='bx bx-menu'></i>
-        <a href="/logout" class="logout bg-primary text-light p-2 mx-auto">LogOut</a>
 
-        <button type="button" class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <a href="/logout" class="logout bg-primary text-light p-2">LogOut</a>
+
+        <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
           <i class="fa-solid fa-user-plus"></i>
         </button>
 
@@ -397,65 +379,6 @@
       </div>
   </div>
   </section>
-  <script>
-    function validateEmail() {
-      var emailinput = document.getElementById('email');
-      var emailError = document.getElementById('email-error');
-      var emailValue = emailinput.value.trim();
-      var emailPattern = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-
-      if (emailValue.length === 0 || !emailPattern.test(emailValue)) {
-        emailError.innerHTML = 'Email is required or invalid.';
-        emailinput.classList.add('is-invalid');
-        emailinput.classList.remove('is-valid');
-        setTimeout(function () {
-          emailError.innerHTML = '';
-          emailinput.classList.remove('is-invalid');
-        }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
-        return false;
-      } else {
-        emailError.innerHTML = '';
-        emailinput.classList.add('is-valid');
-        emailinput.classList.remove('is-invalid');
-      }
-    }
-
-
-    function validateName() {
-      var nameInput = document.getElementById('username');
-      var nameError = document.getElementById('name-error');
-      var nameValue = nameInput.value.trim();
-
-      if (nameValue.length === 0) {
-        nameError.innerHTML = 'Name is required or invalid.';
-        nameInput.classList.add('is-invalid');
-        nameInput.classList.remove('is-valid');
-        setTimeout(function () {
-          nameError.innerHTML = '';
-          nameInput.classList.remove('is-invalid');
-        }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
-        return false;
-      } else {
-        nameError.innerHTML = '';
-        nameInput.classList.add('is-valid');
-        nameInput.classList.remove('is-invalid');
-      }
-    }
-
-
-    function validateForm() {
-      validateName();
-      validateEmail();
-
-
-      var invalidInputs = document.querySelectorAll('.is-invalid');
-      if (invalidInputs.length > 0) {
-        return false;
-      }
-
-      return true;
-    }
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
