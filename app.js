@@ -21,7 +21,7 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/chatapp')
+mongoose.connect('mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority')
   .then(() => {
     console.log("Connected to MongoDB");
   })
