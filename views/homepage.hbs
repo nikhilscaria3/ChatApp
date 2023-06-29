@@ -5,6 +5,9 @@
     <title>Chat App - User Details</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
 
     <style>
         /* Global Styles */
@@ -32,6 +35,7 @@
 
 
             border: 3px solid #000;
+            border-radius: 1rem;
             overflow: hidden;
             display: flex;
 
@@ -115,6 +119,85 @@
                 text-align: center;
             }
         }
+
+        #toggle-container {
+            text-align: center;
+            border: none;
+        }
+
+        #toggle-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        #toggle-button:hover {
+            border: none;
+        }
+
+        #toggle-button:focus,
+        #toggle-button:active {
+            outline: none;
+        }
+
+        #toggle-icon {
+            margin-right: 5px;
+        }
+
+        .sign-up {
+            background-image: linear-gradient(to right, #FFC371, #FF5F6D);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-image 0.3s;
+        }
+
+        .sign-up:hover {
+            background-image: linear-gradient(to right, #FF5F6D, #FFC371);
+        }
+
+        .login {
+            background-image: linear-gradient(to right, #66D9EF, #4A90E2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-image 0.3s;
+        }
+
+        .login:hover {
+            background-image: linear-gradient(to right, #4A90E2, #66D9EF);
+        }
+
+        .fa-toggle-on {
+            color: #4A90E2;
+        }
+
+        .fa-toggle-off {
+            color: #FF5F6D;
+        }
+
+        /* Define the CSS class for the mismatch message */
+        .hide-message {
+            animation: hideMessage 5s forwards;
+        }
+
+        /* Define the CSS animation */
+        @keyframes hideMessage {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -124,33 +207,70 @@
             <span class="travel-text">Welcome to the New Way of Communication</span>
         </div>
         <div class="row">
-            <div class="col-12 col-lg-6  p-5" style="background-color: #e3e6e9!important;">
+            <div class="col-12 col-lg-6  p-5" style=" border-radius: 1rem; background-color: #e3e6e9!important;">
                 <div class="form-container">
-                    <p class="text">Enter the Details to Start Chat</p>
 
-                    <form action="/createUser" method="POST" onsubmit="return validateForm()">
+                    <div id="toggle-container">
+                        <button id="toggle-button" onclick="toggleForm()">
+                            <i id="toggle-icon" class="fa-solid fa-toggle-off"></i>
+                            <span id="toggle-text">Switch to Login</span>
+                        </button>
+                    </div>
+
+
+                    <form id="signup-form" action="/home" method="post">
+                        <h2>Sign Up</h2>
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" id="name" name="name" class="form-control" onkeyup="validateName()"
+                            <label for="signup-username" class="form-label">Name</label>
+                            <input type="text" id="signup-username" name="name" class="form-control"
+                                onkeyup="validateName()" required>
+                            <span id="name-error"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="signup-password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                onkeyup="validatePass()" required>
+                            <span id="email-error"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="number-field">Enter the Number:<span id="random-number"></span></label>
+                            <input type="text" id="number-field" class="form-control" name="number" required>
+                        </div>
+                        <div>
+                            <span id="mismatch-message"></span>
+                        </div>
+
+                        {{#if message}}
+                        <p class="hide-message">{{message}}</p>
+                        {{/if}}
+
+                        <button type="submit" id="sign-up-button" class="sign-up" disabled>Sign Up</button>
+                    </form>
+
+
+                    <form id="login-form" action="/home" method="post" style="display: none;">
+                        <h2>Login</h2>
+                        <div class="mb-3">
+                            <label for="signup-username" class="form-label">Name</label>
+                            <input type="text" id="username" name="name" class="form-control" onkeyup="validateName()"
                                 required>
                             <span id="name-error"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" onkeyup="validateEmail()">
-                            <span id="email-error"></span>
+                            <label for="signup-password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                onkeyup="validatePass()" required>
+                            <span id="pass-error"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="mobile" class="form-label">Mobile</label>
-                            <input type="tel" name="mobile" id="mobile" class="form-control" onkeyup="validateMobile()"
-                                required>
-                            <span id="mobile-error"></span>
-                        </div>
 
-                        <input type="submit" value="Submit" class="btn btn-primary">
+
+                        <button type="submit" class="login">Login</button>
                     </form>
+
                 </div>
             </div>
 
@@ -163,37 +283,97 @@
         <p>Note: The receiver get an email that include a link to start chat</p>
     </div>
 
+    <script>
+        // Generate a random two-digit number
+        var randomNumber = Math.floor(Math.random() * 90 + 10);
+
+        // Display the random number in the span with id "random-number"
+        document.getElementById("random-number").textContent = randomNumber;
+
+        // Enable/disable the sign-up button based on the user's input
+        var numberField = document.getElementById("number-field");
+        var signUpButton = document.getElementById("sign-up-button");
+        var mismatchMessage = document.getElementById("mismatch-message");
+
+        numberField.addEventListener("input", function () {
+            var userNumber = parseInt(this.value);
+
+            if (!isNaN(userNumber) && userNumber === randomNumber) {
+                signUpButton.disabled = false; // Enable the sign-up button
+                mismatchMessage.textContent = "Matched"; // Clear the mismatch message
+                mismatchMessage.classList.remove("hide-message"); // Add the "hide-message" class
+
+
+            } else {
+                signUpButton.disabled = true; // Disable the sign-up button
+                mismatchMessage.textContent = "Number mismatch. Please try again."; // Display the mismatch message
+                mismatchMessage.classList.add("hide-message"); // Add the "hide-message" class
+
+            }
+        });
+
+        // Validate the user's input on form submission
+        document.getElementById("signup-form").addEventListener("submit", function (event) {
+            var userNumber = parseInt(numberField.value);
+
+            if (isNaN(userNumber) || userNumber !== randomNumber) {
+                event.preventDefault(); // Prevent form submission if validation fails
+                alert("Invalid number. Please try again.");
+            }
+        });
+
+    </script>
 
 
     <script>
+        function toggleForm() {
+            var signupForm = document.getElementById("signup-form");
+            var loginForm = document.getElementById("login-form");
+            var toggleButton = document.getElementById("toggle-button");
+            var toggleText = document.getElementById("toggle-text");
+            var toggleIcon = document.getElementById("toggle-icon");
 
-        function validateEmail() {
-            var emailInput = document.getElementById('email');
-            var emailError = document.getElementById('email-error');
-            var emailValue = emailInput.value.trim();
+            if (signupForm.style.display === "none") {
+                signupForm.style.display = "block";
+                loginForm.style.display = "none";
+                toggleText.innerText = "Switch to Login";
+                toggleIcon.classList.remove("fa-toggle-on");
+                toggleIcon.classList.add("fa-toggle-off");
+            } else {
+                signupForm.style.display = "none";
+                loginForm.style.display = "block";
+                toggleText.innerText = "Switch to Sign Up";
+                toggleIcon.classList.remove("fa-toggle-off");
+                toggleIcon.classList.add("fa-toggle-on");
+            }
+        }
+
+
+        function validatePass() {
+            var Passinput = document.getElementById('password');
+            var PassError = document.getElementById('pass-error');
+            var PassValue = Passinput.value.trim();
 
             // Define the regex pattern for email validation
-            var emailPattern = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-
-            if (emailValue.length === 0 || !emailPattern.test(emailValue)) {
-                emailError.innerHTML = 'Email is required or invalid.';
-                emailInput.classList.add('is-invalid');
-                emailInput.classList.remove('is-valid');
+            if (PassValue.length !== 5) {
+                PassError.innerHTML = 'Password is required or invalid.';
+                Passinput.classList.add('is-invalid');
+                Passinput.classList.remove('is-valid');
                 setTimeout(function () {
-                    emailError.innerHTML = '';
-                    emailInput.classList.remove('is-invalid');
+                    PassError.innerHTML = '';
+                    Passinput.classList.remove('is-invalid');
                 }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
                 return false;
             } else {
-                emailError.innerHTML = '';
-                emailInput.classList.add('is-valid');
-                emailInput.classList.remove('is-invalid');
+                PassError.innerHTML = '';
+                Passinput.classList.add('is-valid');
+                Passinput.classList.remove('is-invalid');
             }
         }
 
 
         function validateName() {
-            var nameInput = document.getElementById('name');
+            var nameInput = document.getElementById('username');
             var nameError = document.getElementById('name-error');
             var nameValue = nameInput.value.trim();
 
@@ -214,33 +394,10 @@
         }
 
 
-        function validateMobile() {
-            var mobileInput = document.getElementById('mobile');
-            var mobileError = document.getElementById('mobile-error');
-            var mobileValue = mobileInput.value.trim();
-
-            if (mobileValue.length != 10) {
-                mobileError.innerHTML = 'Mobile number must be exactly 10 digits';
-                mobileInput.classList.add('is-invalid');
-                mobileInput.classList.remove('is-valid');
-                setTimeout(function () {
-                    mobileError.innerHTML = '';
-                    mobileInput.classList.remove('is-invalid');
-                }, 2000); // Set the delay to 3000 milliseconds (3 seconds)
-                return false;
-            } else {
-                mobileError.innerHTML = '';
-                mobileInput.classList.add('is-valid');
-                mobileInput.classList.remove('is-invalid');
-            }
-        }
-
-
-
         function validateForm() {
             validateName();
             validateEmail();
-            validateMobile();
+
 
             var invalidInputs = document.querySelectorAll('.is-invalid');
             if (invalidInputs.length > 0) {

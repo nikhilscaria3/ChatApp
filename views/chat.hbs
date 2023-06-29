@@ -13,7 +13,7 @@
 
   <style>
     body {
-      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
       background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
@@ -77,13 +77,13 @@
     }
 
     #message-form button {
-      background-color: #4caf50;
-      color: #ffffff;
+      font-size: 25px;
+      color: #c06969;
       cursor: pointer;
     }
 
     #message-form button:hover {
-      background-color: #45a049;
+      background-color: #e7e8ec;
     }
 
     .tick {
@@ -114,8 +114,8 @@
     .head {
       justify-content: center;
       text-align: center;
-      font-size: 1.5rem;
-      white-space: pre;
+      white-space: nowrap;
+      font-size: 1rem;
 
     }
 
@@ -128,6 +128,13 @@
       width: 200px;
       /* Adjust the width as needed */
       transform: translateX(0);
+    }
+
+    #sidebar .side-menu li.active:hover {
+      border-color: #353b96;
+      border-style: groove;
+      border-radius: 1rem;
+
     }
   </style>
 
@@ -223,6 +230,27 @@
         font-size: 3rem;
       }
     }
+
+    .logout {
+      background-image: linear-gradient(to right, #66D9EF, #4A90E2);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-image 0.3s;
+    }
+
+    .logout:hover {
+      border-style: groove;
+      border-color: #007bff;
+      background-image: linear-gradient(to right, #4A90E2, #66D9EF);
+    }
+
+    #content nav form {
+      display: none;
+    }
   </style>
 
 </head>
@@ -249,7 +277,7 @@
             <label for="mobile" class="form-label">Mobile</label>
             <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
             <span id="mobile-error"></span><br>
-
+            <input type="text" name="users" value="{{userSession}}">
             <input type="submit" value="Submit">
           </form>
         </div>
@@ -282,6 +310,7 @@
       <!-- NAVBAR -->
       <nav>
         <h1 class="head">Chat App</h1>
+
         <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="offcanvas"
           data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive"><i
             class="fa-sharp fa-solid fa-bars"></i></button>
@@ -289,7 +318,8 @@
         <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasResponsive"
           aria-labelledby="offcanvasResponsiveLabel">
           <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">Responsive offcanvas</h5>
+            <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">User List</h5>
+
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive"
               aria-label="Close"></button>
           </div>
@@ -308,18 +338,12 @@
         </div>
 
         <i class='bx bx-menu'></i>
-        <a href="/category" class="nav-link">Categories</a>
-        <form action="#">
-          <div class="form-input">
-            <input type="search" placeholder="Search...">
-            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
-          </div>
-        </form>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <a href="/logout" class="logout bg-primary text-light p-2 mx-auto">LogOut</a>
+
+        <button type="button" class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <i class="fa-solid fa-user-plus"></i>
         </button>
-        <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
+
       </nav>
       <!-- NAVBAR -->
 
@@ -346,7 +370,7 @@
           <input id="sender" type="text" value="user" disabled>
           <input id="senderid" type="text" value="{{identifier}}" disabled>
           <input id="contents" type="text" placeholder="Type your message">
-          <button type="submit">Send</button>
+          <button type="submit"><i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i></button>
         </form>
       </div>
   </div>

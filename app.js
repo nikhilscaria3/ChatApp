@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
+const session = require('express-session');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
+const cacheControl = require('cache-control')
 const dotenv = require('dotenv');
 const fs = require('fs');
 dotenv.config({ path: path.join(__dirname, "config/config.env") });
@@ -19,7 +21,7 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority")
+mongoose.connect("mongodb://127.0.0.1:27017/chatapp")
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -43,11 +45,55 @@ app.use(express.urlencoded({ extended: false }));
 
 const nodemailer = require('nodemailer');
 
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(function (req, res, next) {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
+app.use(cacheControl({ noCache: true }));
+
+const setUserId = (req, res, next) => {
+  req.session.loggedIn = req.session.loggedIn || false; // Set loggedIn to false if not already set
+  if (req.session.loggedIn && req.session.usersession) {
+    res.locals.userSession = req.session.usersession;
+  } else {
+    res.locals.userSession = null;
+  }
+
+  console.log("req.session.loggedIn:", req.session.loggedIn);
+  console.log("req.session.usersession:", req.session.usersession);
+  console.log("res.locals.userSession:", res.locals.userSession);
+  next();
+};
+
+
+const goToLoginIfNotAuth = (req, res, next) => {
+  if (req.session.loggedIn) {
+    next()
+  } else {
+    res.redirect("/home")
+  }
+};
+
+app.get('/logout', async (req, res) => {
+  req.session.destroy()
+  res.redirect('home')
+})
+
+
 app.post('/createUser', async (req, res) => {
-  const { name, email, mobile } = req.body;
+  const { name, email, mobile, users } = req.body;
   const identifier = uuid(); // Generate a unique identifier
 
-  const user = new chatuser({ name, email, mobile, identifier });
+  const user = new chatuser({ name, email, mobile, identifier, users });
   await user.save();
 
 
@@ -69,7 +115,7 @@ app.post('/createUser', async (req, res) => {
       pass: process.env.SMTP_PASS,
     }
   });
-  
+
   const emailOptions = {
     from: process.env.SMTP_USER,
     to: user.email,
@@ -90,18 +136,99 @@ app.post('/createUser', async (req, res) => {
 });
 
 
+app.post('/home', async (req, res) => {
+  const { name, password } = req.body;
+
+  try {
+    // Find the user in the database by name
+    const user = await User.findOne({ name });
+
+    if (user) {
+      // Compare the provided password with the stored hashed password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        req.session.username = user.name;
+        req.session.password = user.password;
+        req.session.loggedIn = true;
+        req.session.usersession = user._id;
+
+        const userID = user._id; // Store the id of the User in the session
+        res.redirect('/homepage');
+      } else {
+        req.session.message = 'Invalid Password or Username';
+        res.redirect('/home');
+      }
+    }
+  } catch (error) {
+    console.error('Error finding user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.get('/home', async (req, res) => {
-  res.render('homepage');
+  const { loggedIn, username, usersession, message } = req.session;
+
+  // Clear the message after displaying it
+  req.session.message = '';
+
+  try {
+    const users = await User.find({});
+
+    // Render the homepage template and pass the session variables and users
+    res.render('homepage', { loggedIn, username, usersession, message, users });
+  } catch (error) {
+    console.error('Error finding users:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-app.get('/homepage', async (req, res) => {
-  res.render('chat');
+const bcrypt = require('bcrypt');
+const nocache = require('nocache');
+
+app.post('/home', async (req, res) => {
+  const { name, password } = req.body;
+
+  try {
+    // Generate a salt for password hashing
+    const salt = await bcrypt.genSalt(10);
+
+    // Hash the password using bcrypt
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create a new User document with hashed password
+    const user = new User({
+      name,
+      password: hashedPassword,
+    });
+
+    // Save the user to the database
+    await user.save();
+
+    // Redirect to the homepage or render the homepage view
+    res.redirect('/home');
+    // Alternatively, if using a view engine like EJS:
+    // res.render('homepage');
+  } catch (error) {
+    console.error('Error saving user:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-app.get('/chat', async (req, res) => {
+
+app.get('/homepage', nocache, goToLoginIfNotAuth, setUserId, async (req, res) => {
+  const userSession = res.locals.userSession
+  const users = await chatuser.find({ users: userSession });
+  console.log(users);
+  res.render('chat', { users, userSession });
+});
+
+
+app.get('/chat', setUserId, async (req, res) => {
+  const userSession = res.locals.userSession
   const { identifier } = req.query;
   const messages = await Message.find({ senderid: identifier });
-  const users = await chatuser.find({})
+  const users = await chatuser.find({ identifier: identifier })
   const formattedTimes = messages.map((message) => {
     const formattedTime = message.createdAt.toLocaleString('en-IN', {
       month: 'short',
@@ -116,8 +243,9 @@ app.get('/chat', async (req, res) => {
   });
 
   console.log("formattedTimes:", formattedTimes);
-  res.render('chat', { identifier, messages, users, formattedTimes });
+  res.render('chat', { identifier, messages, users, formattedTimes, userSession });
 });
+
 
 
 io.on('connection', (socket) => {
@@ -135,7 +263,7 @@ io.on('connection', (socket) => {
         senderid: message.senderid,
         sender: message.sender,
         content: message.content,
-        
+
 
       });
 
