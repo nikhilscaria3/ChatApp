@@ -21,7 +21,7 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority")
+mongoose.connect('mongodb://127.0.0.1:27017/chatapp')
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -79,13 +79,13 @@ const goToLoginIfNotAuth = (req, res, next) => {
   if (req.session.loggedIn) {
     next()
   } else {
-    res.redirect("/home")
+    res.redirect("/")
   }
 };
 
 app.get('/logout', async (req, res) => {
   req.session.destroy()
-  res.redirect('home')
+  res.redirect('/')
 })
 
 
@@ -136,37 +136,10 @@ app.post('/createUser', async (req, res) => {
 });
 
 
-app.post('/home', async (req, res) => {
-  const { name, password } = req.body;
+const bcrypt = require('bcrypt');
+const nocache = require('nocache');
 
-  try {
-    // Find the user in the database by name
-    const user = await User.findOne({ name });
-
-    if (user) {
-      // Compare the provided password with the stored hashed password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (isPasswordValid) {
-        req.session.username = user.name;
-        req.session.password = user.password;
-        req.session.loggedIn = true;
-        req.session.usersession = user._id;
-
-        const userID = user._id; // Store the id of the User in the session
-        res.redirect('/homepage');
-      } else {
-        req.session.message = 'Invalid Password or Username';
-        res.redirect('/home');
-      }
-    }
-  } catch (error) {
-    console.error('Error finding user:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-app.get('/home', async (req, res) => {
+app.get('/', async (req, res) => {
   const { loggedIn, username, usersession, message } = req.session;
 
   // Clear the message after displaying it
@@ -183,40 +156,65 @@ app.get('/home', async (req, res) => {
   }
 });
 
-const bcrypt = require('bcrypt');
-const nocache = require('nocache');
 
-app.post('/home', async (req, res) => {
+// Handle POST requests to '/home' for sign-up and login
+app.post('/', async (req, res) => {
   const { name, password } = req.body;
 
   try {
-    // Generate a salt for password hashing
-    const salt = await bcrypt.genSalt(10);
+    // Find the user in the database by name
+    const user = await User.findOne({ name });
 
-    // Hash the password using bcrypt
-    const hashedPassword = await bcrypt.hash(password, salt);
+    if (!user) {
+      // User does not exist, proceed with sign-up
 
-    // Create a new User document with hashed password
-    const user = new User({
-      name,
-      password: hashedPassword,
-    });
+      // Generate a salt for password hashing
+      const salt = await bcrypt.genSalt(10);
 
-    // Save the user to the database
-    await user.save();
+      // Hash the password using bcrypt
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Redirect to the homepage or render the homepage view
-    res.redirect('/home');
-    // Alternatively, if using a view engine like EJS:
-    // res.render('homepage');
+      // Create a new User document with hashed password
+      const newUser = new User({
+        name,
+        password: hashedPassword,
+      });
+
+      // Save the user to the database
+      await newUser.save();
+
+      // Set session variables for the newly signed up user
+      req.session.username = newUser.name;
+      req.session.loggedIn = true;
+      req.session.usersession = newUser.id
+      // Redirect to the homepage or any other desired page
+      res.redirect('/');
+    } else {
+      // User exists, proceed with login
+
+      // Compare the provided password with the stored hashed password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        // Set session variables for the logged-in user
+        req.session.username = user.name;
+        req.session.loggedIn = true;
+
+        // Redirect to the homepage or any other desired page
+        res.redirect('/homepage');
+      } else {
+        req.session.message = 'Invalid Password or Username';
+        res.redirect('/');
+      }
+    }
   } catch (error) {
-    console.error('Error saving user:', error);
+    console.error('Error signing up or logging in:', error);
     res.status(500).send('Internal Server Error');
   }
 });
 
 
-app.get('/homepage', nocache, goToLoginIfNotAuth, setUserId, async (req, res) => {
+app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
   const userSession = res.locals.userSession
   const users = await chatuser.find({ users: userSession });
   console.log(users);
