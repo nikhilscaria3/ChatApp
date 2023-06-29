@@ -2,15 +2,257 @@
 <html>
 
 <head>
-    <title>Chat App - User Details</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Chat App - Chat Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-  <link href="/admin.css" rel="stylesheet">
-  <link href="/course.css" rel="stylesheet">
+    <link href="/adminbutton.css" rel="stylesheet">
+    <link href="/coursebutton.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
+        }
+
+        .container {
+            margin-left: 200px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 1rem;
+
+        }
+
+
+        #messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 10px;
+        }
+
+        #messages::-webkit-scrollbar {
+            display: none;
+            /* Hide the scroll line */
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .message p {
+            margin: 0;
+        }
+
+        #message-form {
+            margin-top: 20px;
+        }
+
+        #message-form input[type="text"],
+        #message-form button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #message-form input[type="text"] {
+            width: 150px;
+            margin-right: 10px;
+        }
+
+        #message-form input[type="text"]::placeholder {
+            color: #aaaaaa;
+        }
+
+        #message-form button {
+            font-size: 25px;
+            color: #c06969;
+            cursor: pointer;
+        }
+
+        #message-form button:hover {
+            background-color: #e7e8ec;
+        }
+
+        .tick {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-left: 5px;
+            color: #007bff;
+        }
+
+        .tick.delivered {
+            background-color: #007bff;
+        }
+
+        .message p {
+            margin: 0;
+        }
+
+        .message {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+            color: #070707;
+            font-size: 12px;
+        }
+
+        .head {
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 1rem;
+
+        }
+
+        .offcanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            width: 200px;
+            /* Adjust the width as needed */
+            transform: translateX(0);
+        }
+
+        #sidebar .side-menu li.active:hover {
+            border-color: #353b96;
+            border-style: groove;
+            border-radius: 1rem;
+
+        }
+    </style>
+
+    <style>
+        /* Your existing CSS styles here */
+
+        /* Styles for small screens (up to 576px) */
+        @media (max-width: 576px) {
+
+            /* Sidebar styles */
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                width: 250px;
+                height: 100vh;
+                background-color: #f5f5f5;
+                z-index: 9999;
+                transition: left 0.3s ease-in-out;
+            }
+
+            #sidebar.active {
+                left: 0;
+            }
+
+            #sidebar .brand {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 50px;
+                background-color: #fff;
+            }
+
+            #sidebar .brand i {
+                font-size: 24px;
+            }
+
+            #sidebar ul.side-menu {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            #sidebar ul.side-menu li {
+                padding: 10px 20px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            #sidebar ul.side-menu li:last-child {
+                border-bottom: none;
+            }
+
+            #sidebar ul.side-menu li a {
+                display: block;
+                text-decoration: none;
+                color: #333;
+            }
+
+            #sidebar ul.side-menu li a i {
+                margin-right: 10px;
+            }
+
+            /* Toggle button styles */
+            #sidebarToggle {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 99999;
+                cursor: pointer;
+            }
+
+            #sidebarToggle .bar {
+                width: 30px;
+                height: 3px;
+                background-color: #333;
+                margin-bottom: 5px;
+            }
+
+            #content {
+                width: calc(100% - 0px);
+                left: 0px;
+
+            }
+        }
+
+        @media (min-width: 576px) {
+
+            .offcanvas-lg {
+                display: none;
+            }
+
+            .head {
+                font-size: 3rem;
+            }
+
+        }
+
+        .logout {
+            background-image: linear-gradient(to right, #66D9EF, #4A90E2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-image 0.3s;
+        }
+
+        .logout:hover {
+            border-style: groove;
+            border-color: #007bff;
+            background-image: linear-gradient(to right, #4A90E2, #66D9EF);
+        }
+
+        #content nav form {
+            display: none;
+        }
+    </style>
     <style>
         /* Global Styles */
         body {
@@ -20,26 +262,17 @@
             background: white
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-
-        }
-
-
         .text-box {
 
 
             border: 3px solid #000;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             overflow: hidden;
+            width: 23rem;
+            justify-content: center;
             display: flex;
+            align-items: center;
+            position: absolute;
 
 
         }
@@ -121,11 +354,15 @@
                 text-align: center;
             }
 
+            .container {
+                margin-top: 0rem;
+            }
         }
 
         #toggle-container {
             text-align: center;
             border: none;
+            margin-top: 1rem;
         }
 
         #toggle-button {
@@ -214,116 +451,132 @@
         .slogan {
             font-size: 10px;
         }
+
+        #signup-form {
+            margin-top: 2rem;
+        }
     </style>
+
 </head>
 
 <body>
-    <nav class="navbar bg-body-light">
-        <div class="container-fluid">
-            <div class="d-flex flex-column align-items-center">
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img src="/chatApp (1).png" alt="Logo" width="30" height="34" class="d-inline-block align-text-top"
-                        style="    margin: auto;
+    <!-- Modal -->
+
+    <div class="main">
+        <!-- SIDEBAR -->
+        <!-- CONTENT -->
+        <section id="content">
+            <!-- NAVBAR -->
+            <nav class="navbar bg-body-light">
+                <div class="container-fluid">
+                    <div class="d-flex flex-column align-items-center">
+                        <a class="navbar-brand d-flex align-items-center" href="#">
+                            <img src="/chatApp (1).png" alt="Logo" width="30" height="34"
+                                class="d-inline-block align-text-top" style="    margin: auto;
     margin-top: 1px;">
-                    <span class="mx-2">ChatApp<br>
-                        <p class="slogan">Connect with the world</p>
-                    </span>
-                </a>
+                            <span class="mx-2">ChatApp<br>
+                                <p class="slogan">Connect with the world</p>
+                            </span>
+                        </a>
 
-            </div>
-        </div>
-    </nav>
-
-
-    <div class="container">
-        <div class="text-box mb-2">
-            <span class="travel-text">Welcome to the New Way of Communication</span>
-        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- NAVBAR -->
 
 
-        <div class="row">
-            <div class="col-12 col-lg-6  p-5" style=" border-radius: 1rem; background-color: #e3e6e9!important;">
-                <div class="form-container">
 
-                    <div id="toggle-container">
-                        <button id="toggle-button" onclick="toggleForm()">
-                            <i id="toggle-icon" class="fa-solid fa-toggle-off"></i>
-                            <span id="toggle-text">Switch to Login</span>
-                        </button>
+            <div class="container">
+                <div class="text-box mb-2">
+                    <span class="travel-text">Welcome to the New Way of Communication</span>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-12 col-lg-6  p-5"
+                        style=" border-radius: 1rem; background-color: #e3e6e9!important;">
+                        <div class="form-container">
+
+                            <div id="toggle-container">
+                                <button id="toggle-button" onclick="toggleForm()">
+                                    <i id="toggle-icon" class="fa-solid fa-toggle-off"></i>
+                                    <span id="toggle-text">Switch to Login</span>
+                                </button>
+                            </div>
+
+
+                            <form id="signup-form" action="/" method="post">
+                                <h2>Sign Up</h2>
+                                <div class="mb-3">
+                                    <label for="signup-username" class="form-label">Name</label>
+                                    <input type="text" id="signup-username" name="name" class="form-control"
+                                        onkeyup="validateName()" required>
+                                    <span id="name-error"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="signup-password" class="form-label">Password</label>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                        onkeyup="validatePass()" required>
+                                    <span id="email-error"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="number-field">Enter the Number:<span id="random-number"></span></label>
+                                    <input type="text" id="number-field" class="form-control" name="number" required>
+                                </div>
+                                <div>
+                                    <span id="mismatch-message"></span>
+                                </div>
+
+                                {{#if message}}
+                                <p class="hide-message">{{message}}</p>
+                                {{/if}}
+
+                                <button type="submit" id="sign-up-button" class="sign-up" disabled>Sign Up</button>
+                            </form>
+
+
+                            <form id="login-form" action="/" method="post" style="display: none;">
+                                <h2>Login</h2>
+                                <div class="mb-3">
+                                    <label for="signup-username" class="form-label">Name</label>
+                                    <input type="text" id="username" name="name" class="form-control"
+                                        onkeyup="validateName()" required>
+                                    <span id="name-error"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="signup-password" class="form-label">Password</label>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                        onkeyup="validatePass()" required>
+                                    <span id="pass-error"></span>
+                                </div>
+
+
+
+                                <button type="submit" class="login">Login</button>
+                            </form>
+
+                        </div>
                     </div>
 
-
-                    <form id="signup-form" action="/" method="post">
-                        <h2>Sign Up</h2>
-                        <div class="mb-3">
-                            <label for="signup-username" class="form-label">Name</label>
-                            <input type="text" id="signup-username" name="name" class="form-control"
-                                onkeyup="validateName()" required>
-                            <span id="name-error"></span>
+                    <div class="col-12 col-lg-6 d-flex align-items-center">
+                        <div class="image-container">
+                            <img src="/pexels-cottonbro-studio-5053740.jpg" alt="Image" class="img-fluid">
                         </div>
-
-                        <div class="mb-3">
-                            <label for="signup-password" class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-control"
-                                onkeyup="validatePass()" required>
-                            <span id="email-error"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="number-field">Enter the Number:<span id="random-number"></span></label>
-                            <input type="text" id="number-field" class="form-control" name="number" required>
-                        </div>
-                        <div>
-                            <span id="mismatch-message"></span>
-                        </div>
-
-                        {{#if message}}
-                        <p class="hide-message">{{message}}</p>
-                        {{/if}}
-
-                        <button type="submit" id="sign-up-button" class="sign-up" disabled>Sign Up</button>
-                    </form>
-
-
-                    <form id="login-form" action="/" method="post" style="display: none;">
-                        <h2>Login</h2>
-                        <div class="mb-3">
-                            <label for="signup-username" class="form-label">Name</label>
-                            <input type="text" id="username" name="name" class="form-control" onkeyup="validateName()"
-                                required>
-                            <span id="name-error"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="signup-password" class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-control"
-                                onkeyup="validatePass()" required>
-                            <span id="pass-error"></span>
-                        </div>
-
-
-
-                        <button type="submit" class="login">Login</button>
-                    </form>
-
+                    </div>
                 </div>
+                <p style="display: flex;justify-content:center " class="mt-2">Note: The receiver get an email that
+                    include a link to
+                    start chat</p>
+                <!-- Button trigger modal -->
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    About Us
+                </button>
             </div>
-
-            <div class="col-12 col-lg-6 d-flex align-items-center">
-                <div class="image-container">
-                    <img src="/pexels-cottonbro-studio-5053740.jpg" alt="Image" class="img-fluid">
-                </div>
-            </div>
-        </div>
-        <p>Note: The receiver get an email that include a link to start chat</p>
-        <!-- Button trigger modal -->
-
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            About Us
-        </button>
-
     </div>
-
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -358,6 +611,10 @@
         </div>
     </div>
 
+
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         // Generate a random two-digit number
@@ -483,9 +740,63 @@
             return true;
         }
     </script>
+    <script>
+        const socket = io();
+
+        const messageForm = document.getElementById('message-form');
+        const contentInput = document.getElementById('contents');
+        const senderInput = document.getElementById('sender').value;
+        const senderIdInput = document.getElementById('senderid').value;
+
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const content = contentInput.value.trim();
+            if (content) {
+                const message = {
+                    sender: senderInput,
+                    content: content,
+                    senderid: senderIdInput
+                };
+
+                socket.emit('chat message', message);
+                contentInput.value = '';
+            }
+        });
+
+        socket.on('chat message', (message) => {
+            appendMessage(message);
+        });
+
+        const currentDate = new Date();
+        const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+
+        // Format the temporary date and time
+        const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
+        const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+
+
+
+        function appendMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.innerHTML = `
+  <p><strong>${message.sender}:</strong> ${message.content}</p>
+  <div class="message-info">
+ 
+    <span class="temporary-time">${temporaryTime}</span><br>
+       <i class="fa-solid fa-check-double tick"></i>
+  </div>
+`;
+            messagesDiv.appendChild(messageDiv);
+        }
+
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>
