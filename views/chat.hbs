@@ -266,15 +266,15 @@
         </div>
         <div class="modal-body">
           <form action="/createUser" method="POST">
-            <label for="name" class="form-label">Name</label>
+            <label for="name" class="form-label">Receiver Name</label>
             <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
             <span id="name-error"></span><br>
 
-            <label for="name" class="form-label">Email</label>
+            <label for="name" class="form-label">Receiver Email</label>
             <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
             <span id="email-error"></span><br>
 
-            <label for="mobile" class="form-label">Mobile</label>
+            <label for="mobile" class="form-label">Receiver Mobile</label>
             <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
             <span id="mobile-error"></span><br>
             <input type="text" name="users" value="{{userSession}}">
