@@ -146,10 +146,10 @@ app.get('/', async (req, res) => {
   req.session.message = '';
 
   try {
-    const users = await User.find({});
+   
 
     // Render the homepage template and pass the session variables and users
-    res.render('homepage', { loggedIn, username, usersession, message, users });
+    res.render('homepage', { loggedIn, username, usersession, message });
   } catch (error) {
     console.error('Error finding users:', error);
     res.status(500).send('Internal Server Error');
