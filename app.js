@@ -187,7 +187,7 @@ app.post('/', async (req, res) => {
 
       // Set session variables for the newly signed up user
       req.session.username = newUser.name;
-
+req.session.message = "Successfully Registered!"
       // Redirect to the homepage or any other desired page
       res.redirect('/');
     } else {
