@@ -413,8 +413,9 @@
         </div>
 
 
-        <form id="message-form" action="" enctype="multipart/form-data">
-          <input id="senderid" type="text" value="UserID : {{identifier}}" disabled>
+      <form id="message-form" action="" enctype="multipart/form-data">
+          <input id="sender" type="text" value="user" disabled>
+          <input id="senderid" type="text" value="{{identifier}}" disabled>
           <div>
             <input id="image" type="file" accept="image/*"><br>
             <span>(Try to upload .png .jpg file)</span>
@@ -422,6 +423,7 @@
           <input id="contents" type="text" placeholder="Type your message">
           <button type="submit"><i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i></button>
         </form>
+
 
         <div class="typing-indicator">
           <span>Typing</span>
