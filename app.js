@@ -62,14 +62,14 @@ app.use(cacheControl({ noCache: true }));
 
 const setUserId = (req, res, next) => {
   req.session.loggedIn = req.session.loggedIn || false; // Set loggedIn to false if not already set
-  if (req.session.loggedIn && req.session.usersession) {
-    res.locals.userSession = req.session.usersession;
+  if (req.session.loggedIn && req.session.session) {
+    res.locals.userSession = req.session.session;
   } else {
     res.locals.userSession = null;
   }
 
   console.log("req.session.loggedIn:", req.session.loggedIn);
-  console.log("req.session.usersession:", req.session.usersession);
+  console.log("req.session.session:", req.session.session);
   console.log("res.locals.userSession:", res.locals.userSession);
   next();
 };
@@ -94,7 +94,7 @@ app.get('/button', async (req, res) => {
 
 
 
-app.post('/createUser', async (req, res) => {
+app.post('/homepage', async (req, res) => {
   const { name, email, mobile, users } = req.body;
   const identifier = uuid(); // Generate a unique identifier
 
@@ -159,7 +159,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-
 // Handle POST requests to '/home' for sign-up and login
 app.post('/', async (req, res) => {
   const { name, password } = req.body;
@@ -188,8 +187,7 @@ app.post('/', async (req, res) => {
 
       // Set session variables for the newly signed up user
       req.session.username = newUser.name;
-      req.session.loggedIn = true;
-      req.session.usersession = newUser.id
+
       // Redirect to the homepage or any other desired page
       res.redirect('/');
     } else {
@@ -202,6 +200,8 @@ app.post('/', async (req, res) => {
         // Set session variables for the logged-in user
         req.session.username = user.name;
         req.session.loggedIn = true;
+        req.session.session = user._id;
+        console.log("session", req.session.session);
 
         // Redirect to the homepage or any other desired page
         res.redirect('/homepage');
@@ -215,7 +215,6 @@ app.post('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
   const userSession = res.locals.userSession
