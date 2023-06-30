@@ -8,10 +8,7 @@ const messageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  image: [{
-    title: String,
-    filepath: String,
-  }],
+  image: String,
 });
 const Message = mongoose.model('Message', messageSchema);
 
@@ -39,4 +36,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = { Message, chatuser,User };
+module.exports = { Message, chatuser, User };
