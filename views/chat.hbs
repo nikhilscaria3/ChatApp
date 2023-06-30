@@ -251,6 +251,44 @@
     #content nav form {
       display: none;
     }
+
+    @keyframes typing {
+      0% {
+        opacity: 0.2;
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.2;
+      }
+    }
+
+    .typing-indicator {
+      margin: 10px;
+      display: none;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #000;
+      margin-right: 4px;
+      opacity: 0.2;
+      animation: typing 1s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
   </style>
 
 </head>
@@ -265,7 +303,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="/createUser" method="POST">
+          <form action="/homepage" method="POST">
             <label for="name" class="form-label">Name</label>
             <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
             <span id="name-error"></span><br>
@@ -277,7 +315,7 @@
             <label for="mobile" class="form-label">Mobile</label>
             <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
             <span id="mobile-error"></span><br>
-            <input type="text" name="users" value="{{userSession}}">
+            <input type="hidden" name="users" value="{{userSession}}">
             <input type="submit" value="Submit">
           </form>
         </div>
@@ -341,7 +379,7 @@
           </div>
         </div>
 
-        
+
         <a href="/logout" class="logout bg-primary text-light p-2">LogOut</a>
 
         <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -376,9 +414,49 @@
           <input id="contents" type="text" placeholder="Type your message">
           <button type="submit"><i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i></button>
         </form>
+        <div class="typing-indicator">
+          <span>Typing</span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+
       </div>
   </div>
   </section>
+  <script>
+    const inputField = document.getElementById("contents");
+    const typingIndicator = document.querySelector(".typing-indicator");
+    let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
+    let typingTimeout;
+
+    // Clear the isTyping value from local storage on page load
+    localStorage.removeItem("isTyping");
+
+    inputField.addEventListener("keyup", function (event) {
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(stopTyping, 600);
+    });
+
+    inputField.addEventListener("keydown", function (event) {
+      if (!isTyping && event.key !== "Enter") {
+        startTyping();
+      }
+      clearTimeout(typingTimeout);
+    });
+
+    function startTyping() {
+      isTyping = true;
+      localStorage.setItem("isTyping", "true");
+      typingIndicator.style.display = "inline-block";
+    }
+
+    function stopTyping() {
+      isTyping = false;
+      localStorage.removeItem("isTyping");
+      typingIndicator.style.display = "none";
+    }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
