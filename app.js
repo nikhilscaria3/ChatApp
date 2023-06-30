@@ -4,6 +4,7 @@ const session = require('express-session');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
+const multer = require('multer')
 const cacheControl = require('cache-control')
 const dotenv = require('dotenv');
 const fs = require('fs');
@@ -187,7 +188,7 @@ app.post('/', async (req, res) => {
 
       // Set session variables for the newly signed up user
       req.session.username = newUser.name;
-req.session.message = "Successfully Registered!"
+      req.session.message = "Successfully Registered"
       // Redirect to the homepage or any other desired page
       res.redirect('/');
     } else {
@@ -223,30 +224,36 @@ app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
   res.render('chat', { users, userSession });
 });
 
+// Assuming you have imported the necessary models and libraries
 
 app.get('/chat', setUserId, async (req, res) => {
-  const userSession = res.locals.userSession
-  const { identifier } = req.query;
-  const messages = await Message.find({ senderid: identifier });
-  const users = await chatuser.find({ identifier: identifier })
-  const formattedTimes = messages.map((message) => {
-    const formattedTime = message.createdAt.toLocaleString('en-IN', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
+  try {
+    const userSession = res.locals.userSession;
+    const { identifier } = req.query;
+    const messages = await Message.find({ senderid: identifier });
+    const users = await chatuser.find({ identifier: identifier });
+   
+    const formattedTimes = messages.map((message) => {
+      const formattedTime = message.createdAt.toLocaleString('en-IN', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      });
+
+      const [day, time] = formattedTime.split(', ');
+      return { day, time };
     });
 
-    console.log(formattedTime);
-    const [day, time] = formattedTime.split(', ');
-    return { day, time };
-  });
-
-  console.log("formattedTimes:", formattedTimes);
-  res.render('chat', { identifier, messages, users, formattedTimes, userSession });
+    console.log("formattedTimes:", formattedTimes);
+    res.render('chat', { identifier, messages, users, formattedTimes, userSession });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-
+// Rest of the code
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -263,8 +270,7 @@ io.on('connection', (socket) => {
         senderid: message.senderid,
         sender: message.sender,
         content: message.content,
-
-
+        image: message.image, // Use the image data from the client
       });
 
       await newMessage.save();
@@ -280,6 +286,8 @@ io.on('connection', (socket) => {
     console.log('A user disconnected');
   });
 });
+
+// Rest of the code
 
 http.listen(4000, () => {
   console.log('Server is running on http://localhost:4000');
