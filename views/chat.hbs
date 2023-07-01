@@ -19,7 +19,37 @@
       background: linear-gradient(to right, #0a7cc8, #3d7eb3, #6d81a0, #9e838d);
     }
 
-    .container {
+    /* Dark theme styles */
+    body.dark-theme {
+      background: #1e1e1e color: #ffffff;
+    }
+
+    /* Light theme styles */
+    body.light-theme {
+      background-color: #f5f5f5;
+      color: #333333;
+    }
+
+    /* Blue theme styles */
+    body.blue-theme {
+      background: #007bff;
+      color: #ffffff;
+    }
+
+    /* Green theme styles */
+    body.green-theme {
+      background-color: #28a745;
+      color: #ffffff;
+    }
+
+    /* Purple theme styles */
+    body.purple-theme {
+      background-color: #6f42c1;
+      color: #ffffff;
+    }
+
+
+    .containers {
       margin-left: 200px;
       max-width: 800px;
       margin: 0 auto;
@@ -30,6 +60,7 @@
       flex-direction: column;
       height: 600px;
       /* Adjust the height as needed */
+      margin-top: 2rem;
     }
 
 
@@ -57,7 +88,7 @@
     }
 
     #message-form {
-      margin-top: 20px;
+      margin-top: 4rem;
     }
 
     #message-form input[type="text"],
@@ -68,9 +99,10 @@
     }
 
     #message-form input[type="text"] {
-      width: 23rem;
+      width: 13rem;
       margin-right: 10px;
     }
+
 
     #message-form input[type="text"]::placeholder {
       color: #aaaaaa;
@@ -219,9 +251,28 @@
 
       }
 
-      #message-form input[type="text"] {
-        width: 16rem;
+      .full-size {
+        width: auto;
+        height: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        margin: auto;
+        cursor: pointer;
       }
+
+      #theme-select {
+        display: none;
+      }
+
+      #navbar-nav {
+        display: block;
+      }
+
+
     }
 
     @media (min-width: 576px) {
@@ -232,6 +283,18 @@
 
       .head {
         font-size: 3rem;
+      }
+
+      .message-image {
+        max-width: 10rem;
+        height: auto;
+        margin-right: 12rem;
+      }
+
+      .message-video {
+        max-width: 10rem;
+        height: auto;
+        margin-right: 12rem;
       }
     }
 
@@ -293,292 +356,495 @@
     .dot:nth-child(3) {
       animation-delay: 0.4s;
     }
+
+    .full-size {
+      width: auto;
+      height: auto;
+      z-index: 9999;
+      margin: auto;
+      cursor: pointer;
+    }
+
+    #sender {
+      width: 4rem;
+    }
+
+
+    .input-with-icon {
+      position: relative;
+      display: inline-block;
+    }
+
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .input-field {
+      display: none;
+      /* Hide the original file input */
+    }
+
+    .file-label {
+      background-color: #4f73b0;
+      /* Set the background color of the label */
+      color: white;
+      /* Set the text color of the label */
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #previewContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #preview {
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+    .glow-icon {
+      transition: color 0.5s;
+    }
+
+    .fa-paper-plane:hover {
+      color: #f9c74f;
+      /* Change to the desired glow color */
+    }
+
+    @media (min-width: 992px) {
+      #navbar-nav {
+        display: none;
+      }
+    }
   </style>
 
 </head>
 
 <body>
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="/homepage" method="POST">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
-            <span id="name-error"></span><br>
-
-            <label for="name" class="form-label">Email</label>
-            <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
-            <span id="email-error"></span><br>
-
-            <label for="mobile" class="form-label">Mobile</label>
-            <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
-            <span id="mobile-error"></span><br>
-            <input type="hidden" name="users" value="{{userSession}}">
-            <input type="submit" value="Submit">
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <div class="main">
-    <section id="sidebar" class="hide-on-med-and-down">
-      <a href="#" class="brand">
-        <i class='bx bxs-smile'></i>
-      </a>
-      <ul class="side-menu top">
-        {{#each users}}
-        <li class="active">
-          <a href="/chat?identifier={{this.identifier}}" class="">
-            <i class='bx bxs-dashboard'></i>
-            <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}}</span>
-          </a>
-        </li>
-        {{/each}}
-      </ul>
-    </section>
-
-    <!-- SIDEBAR -->
-    <!-- CONTENT -->
-    <section id="content">
-      <!-- NAVBAR -->
-      <nav>
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img src="/chatApp (1).png" alt="Logo" width="30" height="34" class="d-inline-block align-text-top" style="    margin: auto;
-    margin-top: 1px;">
-          <span class="mx-2" style="font-size: 2rem;">ChatApp
-          </span>
+  <div class="container-fluid" style="margin: 0;padding:0">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="/chatApp (1).png" alt="Logo" width="30" height="34" class="d-inline-block align-text-top"
+            style="margin: auto; margin-top: -10px;">
+          <span class="mx-2" style="font-size: 2rem;">ChatApp</span>
         </a>
-        <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive"><i
-            class="fa-sharp fa-solid fa-bars"></i></button>
-
-        <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasResponsive"
-          aria-labelledby="offcanvasResponsiveLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">User List</h5>
-
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive"
-              aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <ul class="side-menu top">
-              {{#each users}}
-              <li class="active">
-                <a href="/chat?identifier={{this.identifier}}" class="">
-                  <i class='bx bxs-dashboard'></i>
-                  <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}}</span>
-                </a>
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-        </div>
-
-
-        <a href="/logout" class="logout bg-primary text-light p-2">LogOut</a>
-
-        <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
-          <i class="fa-solid fa-user-plus"></i>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fa-sharp fa-solid fa-bars"></i>
         </button>
 
-      </nav>
-      <!-- NAVBAR -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav1"
+          aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fa-sharp fa-solid fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto" style="gap:2rem">
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">LogOut</a>
+            </li>
+
+            <li class="nav-item">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="theme-dropdown"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  Select Theme
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="theme-dropdown">
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('default')">Default</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('dark')">Dark</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('light')">Light</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('blue')">Blue</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('green')">Green</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('purple')">Purple</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fa-solid fa-user-plus"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <form action="/chat" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="id" value="{{identifier}}">
+                <div class="input-with-icon">
+                  <label for="file" class="file-label">
+                    <i class="fas fa-upload"></i>
+                    <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
+                  </label>
+                  <input id="file" type="file" name="image" accept="image/*" class="input-field"
+                    onchange="displayFileName(this)">
+                </div>
 
 
+                <button type="submit" class="p-1">
+                  <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
 
-      <div class="container mt-5">
-        <div id="messages">
-          {{#each messages}}
-          <div class="message">
 
-            <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
-            <img src="{{this.image}}" style="width: 10rem;">
-            {{#with (lookup ../formattedTimes @index)}}
-            <div class="message-info">
-              <p>{{day}}, {{time}}</p>
-              <i class="fa-solid fa-check-double tick"></i>
+        <script>
+          function displayFileName(input) {
+            const fileName = input.value.split('\\').pop(); // Extract filename from the file path
+            const fileLabel = document.querySelector('.file-label');
+            fileLabel.textContent = fileName;
+          }
+
+        </script>
+        <div class="collapse navbar-collapse" id="navbarNav1">
+          <ul class="navbar-nav ms-auto" id="navbar-nav">
+            {{#each users}}
+            <li class="active" style="display: flex; width: 29rem;">
+              <a href="/chat?identifier={{this.identifier}}" class="nav-link ">
+                <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
+              </a>
+              <a href="/chat?deleteuser_id={{this._id}}">
+                <i class="fa-solid fa-trash nav-link" style="color: #186bfb;"></i>
+              </a>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col-lg-3 col-md-4 d-none d-md-block">
+        <section id="sidebar">
+          <ul class="side-menu top">
+            {{#each users}}
+            <li class="active" style="display: flex; width: 29rem;">
+              <a href="/chat?identifier={{this.identifier}}" class="">
+                <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
+              </a>
+              <a href="/chat?deleteuser_id={{this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+      </div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            {{/with}}
+            <div class="modal-body">
+              <form action="/homepage" method="POST">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" name="name" class="form-input" onkeyup="validateName()" required>
+                <span id="name-error"></span><br>
+
+                <label for="name" class="form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
+                <span id="email-error"></span><br>
+
+                <label for="mobile" class="form-label">Mobile</label>
+                <input type="tel" name="mobile" id="mobile" class="form-input" onkeyup="validateMobile()" required>
+                <span id="mobile-error"></span><br>
+                <input type="hidden" name="users" value="{{userSession}}">
+                <input type="submit" value="Submit">
+              </form>
+            </div>
           </div>
-          {{/each}}
         </div>
-
-
-      <form id="message-form" action="" enctype="multipart/form-data">
-          <input id="sender" type="text" value="user" disabled>
-          <input id="senderid" type="text" value="{{identifier}}" disabled>
-          <div>
-            <input id="image" type="file" accept="image/*"><br>
-            <span>(Try to upload .png .jpg file)</span>
-          </div>
-          <input id="contents" type="text" placeholder="Type your message">
-          <button type="submit"><i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i></button>
-        </form>
-
-
-        <div class="typing-indicator">
-          <span>Typing</span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
-
       </div>
-  </div>
-  </section>
 
-  <style>
-    .message {
-      margin-bottom: 10px;
-    }
+      {{#each users}}
+      <div class="containers" style="background:url('/uploads/{{this.image.filepath}}');  background-size: 100% 100%;">
+        {{/each}}
+        <section id="content">
 
-    .message-content {
-      margin: 0;
-    }
 
-    .message-image-container {
-      display: flex;
-      justify-content: center;
-      margin: auto;
-      margin-right: 13rem;
-    }
+          <div id="messages" style="overflow-y: scroll; height: 400px;">
+            {{#each messages}}
+            <div class="message">
+              <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
+              {{#if this.image}}
+              <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
+              {{/if}}
+              {{#if this.video}}
+              <video controls style="width: 10rem;">
+                <source src="{{this.video}}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              {{/if}}
+              {{#with (lookup ../formattedTimes @index)}}
+              <div class="message-info">
+                <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+                <p>{{day}}, {{time}}</p>
+                <i class="fa-solid fa-check-double tick"></i>
+              </div>
+              {{/with}}
+            </div>
+            {{/each}}
+          </div>
 
-    .message-image {
-      max-width: 10rem;
-      height: auto;
-    }
+          <form id="message-form" action="" enctype="multipart/form-data">
+            <div class="disable d-flex" style="width: 6rem;">
+              <input id="sender" value="user" disabled>
+              <input id="senderid" value="{{identifier}}" disabled>
+            </div>
+            <div class="input-with-icon">
+              <label for="file" class="file-label">
+                <i class="fas fa-file"></i>
+                <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
+              </label>
+              <input id="file" type="file" onchange="previewImage()" accept="image/*, video/*" class="input-field">
+            </div>
 
-    .message-info {
-      display: flex;
-      align-items: center;
-    }
+            <img id="preview" src="#" alt="">
+            <input id="contents" type="text" placeholder="Type your message">
+            <button type="submit" onclick="image()" class="glow-button">
+              <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
+            </button>
+          </form>
 
-    .temporary-time {
-      margin-right: 10px;
-    }
+          <div class="typing-indicator">
+            <span>Typing</span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </section>
+      </div>
 
-    .fa-check-double {
-      color: green;
-    }
-  </style>
-  <script>
-    const inputField = document.getElementById("contents");
-    const typingIndicator = document.querySelector(".typing-indicator");
-    let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
-    let typingTimeout;
 
-    // Clear the isTyping value from local storage on page load
-    localStorage.removeItem("isTyping");
+      <script>
+        function changeTheme(theme) {
+          // Remove existing theme classes
+          document.body.classList.remove('default', 'dark', 'light', 'blue', 'green', 'purple');
 
-    inputField.addEventListener("keyup", function (event) {
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(stopTyping, 600);
-    });
-
-    inputField.addEventListener("keydown", function (event) {
-      if (!isTyping && event.key !== "Enter") {
-        startTyping();
-      }
-      clearTimeout(typingTimeout);
-    });
-
-    function startTyping() {
-      isTyping = true;
-      localStorage.setItem("isTyping", "true");
-      typingIndicator.style.display = "inline-block";
-    }
-
-    function stopTyping() {
-      isTyping = false;
-      localStorage.removeItem("isTyping");
-      typingIndicator.style.display = "none";
-    }
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    // Client-side code
-    const socket = io();
-
-    const messageForm = document.getElementById('message-form');
-    const contentInput = document.getElementById('contents');
-    const senderInput = document.getElementById('sender').value;
-    const senderIdInput = document.getElementById('senderid').value;
-    const imageInput = document.getElementById('image');
-
-    messageForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const content = contentInput.value.trim();
-      const imageFile = imageInput.files[0];
-
-      if (content || imageFile) {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const message = {
-            sender: senderInput,
-            content: content,
-            senderid: senderIdInput,
-            image: reader.result, // Base64 data of the image
-          };
-
-          socket.emit('chat message', message);
-          contentInput.value = '';
-          imageInput.value = ''; // Clear the file input after sending
-        };
-
-        if (imageFile) {
-          reader.readAsDataURL(imageFile); // Convert image to Base64
-        } else {
-          reader.onload(); // Trigger the onload event when no image is selected
+          // Apply the selected theme class
+          document.body.classList.add(theme);
         }
-      }
-    });
+      </script>
 
-    socket.on('chat message', (message) => {
-      appendMessage(message);
-    });
+      <script>
+        function previewImage() {
+          var preview = document.getElementById('preview');
+          var file = document.getElementById('file').files[0];
+          var reader = new FileReader();
 
-    const currentDate = new Date();
-    const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+          reader.onloadend = function () {
+            preview.src = reader.result;
+          }
 
-    // Format the temporary date and time
-    const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
-    const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+          if (file) {
+            reader.readAsDataURL(file);
+          } else {
+            preview.src = "";
+          }
+        }
+
+        function image() {
+          var preview = document.getElementById('preview');
+          preview.style.display = "none"
+        }
+      </script>
+      <style>
+        #preview {
+          max-width: 300px;
+          max-height: 300px;
+
+        }
+
+        .message {
+          margin-bottom: 10px;
+        }
+
+        .message-content {
+          margin: 0;
+        }
+
+        .message-image-container {
+          display: flex;
+          justify-content: center;
+          margin: auto;
 
 
+        }
 
-    function appendMessage(message) {
-      const messagesDiv = document.getElementById('messages');
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      messageDiv.innerHTML = `
-    <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
-    <div class="message-info">
-      <div class="message-image-container">
-        <img src="${message.image}" alt="Image" class="message-image">
-      </div>
-      <span class="temporary-time">${temporaryTime}</span>
-      <i class="fa-solid fa-check-double tick"></i>
-    </div>
+        .message-video-container {
+
+          display: flex;
+          justify-content: center;
+          margin: auto;
+
+        }
+
+        .message-image {
+          max-width: 10rem;
+          height: auto;
+
+        }
+
+        .message-video {
+          max-width: 10rem;
+          height: auto;
+        }
+
+        .message-info {
+          display: flex;
+          align-items: center;
+        }
+
+
+        .fa-check-double {
+          color: green;
+        }
+      </style>
+
+      <script>
+
+        function toggleImageSize(image) {
+          image.classList.toggle('full-size');
+          if (image.classList.contains('full-size')) {
+            image.style.width = '100%';
+          } else {
+            image.style.width = '10rem';
+          }
+
+        }
+      </script>
+
+      <script>
+        const inputField = document.getElementById("contents");
+        const typingIndicator = document.querySelector(".typing-indicator");
+        let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
+        let typingTimeout;
+
+        // Clear the isTyping value from local storage on page load
+        localStorage.removeItem("isTyping");
+
+        inputField.addEventListener("keyup", function (event) {
+          clearTimeout(typingTimeout);
+          typingTimeout = setTimeout(stopTyping, 600);
+        });
+
+        inputField.addEventListener("keydown", function (event) {
+          if (!isTyping && event.key !== "Enter") {
+            startTyping();
+          }
+          clearTimeout(typingTimeout);
+        });
+
+        function startTyping() {
+          isTyping = true;
+          localStorage.setItem("isTyping", "true");
+          typingIndicator.style.display = "inline-block";
+        }
+
+        function stopTyping() {
+          isTyping = false;
+          localStorage.removeItem("isTyping");
+          typingIndicator.style.display = "none";
+        }
+      </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        // Client-side code
+        const socket = io();
+
+        const messageForm = document.getElementById('message-form');
+        const contentInput = document.getElementById('contents');
+        const senderInput = document.getElementById('sender').value;
+        const senderIdInput = document.getElementById('senderid').value;
+        const fileInput = document.getElementById('file');
+
+        messageForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const content = contentInput.value.trim();
+          const file = fileInput.files[0];
+
+          if (content || file) {
+            const reader = new FileReader();
+
+            reader.onload = () => {
+              const message = {
+                sender: senderInput,
+                content: content,
+                senderid: senderIdInput,
+                image: file && file.type.startsWith('image/') ? reader.result : null,
+                video: file && file.type.startsWith('video/') ? reader.result : null,
+              };
+
+              socket.emit('chat message', message);
+              contentInput.value = '';
+              fileInput.value = ''; // Clear the file input after sending
+            };
+
+            if (file) {
+              reader.readAsDataURL(file); // Convert file to Base64
+            } else {
+              reader.onload(); // Trigger the onload event when no file is selected
+            }
+          }
+        });
+
+        socket.on('chat message', (message) => {
+          appendMessage(message);
+        });
+
+        const currentDate = new Date();
+        const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+
+        // Format the temporary date and time
+        const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
+        const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+
+        function appendMessage(message) {
+          const messagesDiv = document.getElementById('messages');
+          const messageDiv = document.createElement('div');
+          messageDiv.classList.add('message');
+          messageDiv.innerHTML = `
+        <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
+        <div class="message-info">
+          <div class="message-image-container">
+            ${message.image && message.image.startsWith('data:image/') ? `<img src="${message.image}" alt="Image"  class="message-image">` : ''}
+          </div>
+          <div class="message-video-container">
+            ${message.video ? `<video src="${message.video}" class="message-video" controls></video>` : ''}
+          </div>
+          <a href="/chat?delete_id=${message._id}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+          <span class="temporary-time">${temporaryTime}</span>
+          <i class="fa-solid fa-check-double tick"></i>
+        </div>
   `;
 
-      messagesDiv.appendChild(messageDiv);
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-    crossorigin="anonymous"></script>
+          messagesDiv.appendChild(messageDiv);
+
+
+        }
+
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 

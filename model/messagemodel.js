@@ -9,6 +9,7 @@ const messageSchema = new mongoose.Schema({
     default: Date.now
   },
   image: String,
+  video: String,
 });
 const Message = mongoose.model('Message', messageSchema);
 
@@ -24,6 +25,11 @@ const chataddSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  image: {
+    title: { type: String },
+    filepath: { type: String }
+  }
+
 });
 
 const chatuser = mongoose.model('chatuser', chataddSchema);

@@ -20,7 +20,7 @@ app.set('view engine', 'hbs');
 
 // Set up the static files directory
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads/')));
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority')
   .then(() => {
@@ -226,13 +226,49 @@ app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
 
 // Assuming you have imported the necessary models and libraries
 
-app.get('/chat', setUserId, async (req, res) => {
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+
+
+
+app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
   try {
     const userSession = res.locals.userSession;
+
     const { identifier } = req.query;
     const messages = await Message.find({ senderid: identifier });
     const users = await chatuser.find({ identifier: identifier });
-   
+
+    // Check if files were uploade
+
+    // Handle deletion of messages
+    if (req.query.delete_id) {
+      const deletedMessage = await Message.findByIdAndDelete(req.query.delete_id);
+      if (deletedMessage) {
+        const senderId = deletedMessage.senderid;
+        return res.redirect(`/chat?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+    // Handle deletion of users
+    if (req.query.deleteuser_id) {
+      const deletedUser = await chatuser.findByIdAndDelete(req.query.deleteuser_id);
+      if (deletedUser) {
+        const senderId = deletedUser.senderid;
+        return res.redirect(`/chat?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
     const formattedTimes = messages.map((message) => {
       const formattedTime = message.createdAt.toLocaleString('en-IN', {
         month: 'short',
@@ -252,6 +288,36 @@ app.get('/chat', setUserId, async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+app.post('/chat', setUserId, upload.single('image'), goToLoginIfNotAuth, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const userSession = res.locals.userSession;
+    console.log("id", id);
+
+    // Check if files were uploaded
+    if (req.file) {
+      const photo = {
+        title: req.file.originalname,
+        filepath: req.file.filename
+      };
+
+      console.log("phots", photo);
+      // Update the user with the new photo
+      await chatuser.updateOne({ identifier: id }, { image: photo });
+    } else {
+      // Handle the case when no files were uploaded
+      console.log("error");
+    }
+
+
+    req.session.message = 'Edited Successfully';
+    return res.redirect(`/chat?identifier=${id}`);
+  } catch (error) {
+    console.error(error);
+    res.render('error');
+  }
+});
+
 
 // Rest of the code
 
@@ -271,12 +337,25 @@ io.on('connection', (socket) => {
         sender: message.sender,
         content: message.content,
         image: message.image, // Use the image data from the client
+        video: message.video
       });
 
       await newMessage.save();
 
       // Emit the chat message to all connected sockets
       io.emit('chat message', newMessage);
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  socket.on('delete message', async (messageId) => {
+    try {
+      // Delete the message from the database using the messageId
+      await Message.findByIdAndDelete(messageId);
+
+      // Emit the delete event to all connected sockets
+      io.emit('message deleted', messageId);
     } catch (error) {
       console.error(error);
     }
