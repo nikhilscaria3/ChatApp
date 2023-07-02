@@ -88,7 +88,7 @@
     }
 
     #message-form {
-      margin-top: 4rem;
+      margin-top: 1rem;
     }
 
     #message-form input[type="text"],
@@ -438,7 +438,7 @@
   <div class="container-fluid" style="margin: 0;padding:0">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/homepage">
           <img src="/chatApp (1).png" alt="Logo" width="30" height="34" class="d-inline-block align-text-top"
             style="margin: auto; margin-top: -10px;">
           <span class="mx-2" style="font-size: 2rem;">ChatApp</span>
@@ -467,11 +467,11 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="theme-dropdown">
                   <li><a class="dropdown-item" href="#" onclick="changeTheme('default')">Default</a></li>
-                  <li><a class="dropdown-item" href="#" onclick="changeTheme('dark')">Dark</a></li>
-                  <li><a class="dropdown-item" href="#" onclick="changeTheme('light')">Light</a></li>
-                  <li><a class="dropdown-item" href="#" onclick="changeTheme('blue')">Blue</a></li>
-                  <li><a class="dropdown-item" href="#" onclick="changeTheme('green')">Green</a></li>
-                  <li><a class="dropdown-item" href="#" onclick="changeTheme('purple')">Purple</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('dark')">Dark & White</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('light')">Light & shadow</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('blue')">Blue & Red</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('green')">Green & Red</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="changeTheme('purple')">Purple & Red</a></li>
                 </ul>
               </div>
             </li>
@@ -496,12 +496,40 @@
                 <button type="submit" class="p-1">
                   <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
                 </button>
+
+                <a href="/chat?deleteimage_id={{identifier}}"><i class="fa-solid fa-trash"
+                    style="color: #186bfb;"></i></a>
+
               </form>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Clear Chat
+              </button>
             </li>
           </ul>
         </div>
 
+        <!-- Button trigger modal -->
 
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Verify To Delete</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <h6>Are you sure want to clear this chat ?</h6>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a class="nav-link" href="/chat?deleteallmessage={{identifier}}">Clear</a>
+              </div>
+            </div>
+          </div>
+        </div>
         <script>
           function displayFileName(input) {
             const fileName = input.value.split('\\').pop(); // Extract filename from the file path
@@ -517,7 +545,7 @@
               <a href="/chat?identifier={{this.identifier}}" class="nav-link ">
                 <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
               </a>
-              <a href="/chat?deleteuser_id={{this._id}}">
+              <a href="/chat?deleteuser_id={{this.identifier}}">
                 <i class="fa-solid fa-trash nav-link" style="color: #186bfb;"></i>
               </a>
             </li>
@@ -537,7 +565,7 @@
               <a href="/chat?identifier={{this.identifier}}" class="">
                 <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
               </a>
-              <a href="/chat?deleteuser_id={{this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+              <a href="/chat?deleteuser_id={{this.identifier}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
             </li>
             {{/each}}
           </ul>
@@ -573,255 +601,260 @@
       </div>
 
       {{#each users}}
+      {{#if this.image.filepath}}
       <div class="containers" style="background:url('/uploads/{{this.image.filepath}}');  background-size: 100% 100%;">
-        {{/each}}
-        <section id="content">
+        {{else}}
+        <div class="containers">
+          {{/if}}
+          {{/each}}
+          <section id="content">
 
 
-          <div id="messages" style="overflow-y: scroll; height: 400px;">
-            {{#each messages}}
-            <div class="message">
-              <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
-              {{#if this.image}}
-              <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
-              {{/if}}
-              {{#if this.video}}
-              <video controls style="width: 10rem;">
-                <source src="{{this.video}}" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-              {{/if}}
-              {{#with (lookup ../formattedTimes @index)}}
-              <div class="message-info">
-                <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
-                <p>{{day}}, {{time}}</p>
-                <i class="fa-solid fa-check-double tick"></i>
+            <div id="messages" style="overflow-y: scroll; height: 468px;">
+              {{#each messages}}
+              <div class="message">
+                <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
+                {{#if this.image}}
+                <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
+                {{/if}}
+                {{#if this.video}}
+                <video controls style="width: 10rem;">
+                  <source src="{{this.video}}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                {{/if}}
+                {{#with (lookup ../formattedTimes @index)}}
+                <div class="message-info">
+                  <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash"
+                      style="color: #186bfb;"></i></a>
+                  <p>{{day}}, {{time}}</p>
+                  <i class="fa-solid fa-check-double tick"></i>
+                </div>
+                {{/with}}
               </div>
-              {{/with}}
-            </div>
-            {{/each}}
-          </div>
-
-          <form id="message-form" action="" enctype="multipart/form-data">
-            <div class="disable d-flex" style="width: 6rem;">
-              <input id="sender" value="user" disabled>
-              <input id="senderid" value="{{identifier}}" disabled>
-            </div>
-            <div class="input-with-icon">
-              <label for="file" class="file-label">
-                <i class="fas fa-file"></i>
-                <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
-              </label>
-              <input id="file" type="file" onchange="previewImage()" accept="image/*, video/*" class="input-field">
+              {{/each}}
             </div>
 
-            <img id="preview" src="#" alt="">
-            <input id="contents" type="text" placeholder="Type your message">
-            <button type="submit" onclick="image()" class="glow-button">
-              <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
-            </button>
-          </form>
+            <form id="message-form" action="" enctype="multipart/form-data">
+              <div class="disable d-flex" style="width: 6rem;">
+                <input id="sender" value="user" disabled>
+                <input id="senderid" value="{{identifier}}" disabled>
+              </div>
+              <div class="input-with-icon">
+                <label for="file" class="file-label">
+                  <i class="fas fa-file"></i>
+                  <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
+                </label>
+                <input id="file" type="file" onchange="previewImage()" accept="image/*, video/*" class="input-field">
+              </div>
 
-          <div class="typing-indicator">
-            <span>Typing</span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
-        </section>
-      </div>
+              <img id="preview" src="#" alt="">
+              <input id="contents" type="text" placeholder="Type your message">
+              <button type="submit" onclick="image()" class="glow-button">
+                <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
+              </button>
+            </form>
+
+            <div class="typing-indicator">
+              <span>Typing</span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          </section>
+        </div>
 
 
-      <script>
-        function changeTheme(theme) {
-          // Remove existing theme classes
-          document.body.classList.remove('default', 'dark', 'light', 'blue', 'green', 'purple');
+        <script>
+          function changeTheme(theme) {
+            // Remove existing theme classes
+            document.body.classList.remove('default', 'dark', 'light', 'blue', 'green', 'purple');
 
-          // Apply the selected theme class
-          document.body.classList.add(theme);
-        }
-      </script>
-
-      <script>
-        function previewImage() {
-          var preview = document.getElementById('preview');
-          var file = document.getElementById('file').files[0];
-          var reader = new FileReader();
-
-          reader.onloadend = function () {
-            preview.src = reader.result;
+            // Apply the selected theme class
+            document.body.classList.add(theme);
           }
+        </script>
 
-          if (file) {
-            reader.readAsDataURL(file);
-          } else {
-            preview.src = "";
-          }
-        }
+        <script>
+          function previewImage() {
+            var preview = document.getElementById('preview');
+            var file = document.getElementById('file').files[0];
+            var reader = new FileReader();
 
-        function image() {
-          var preview = document.getElementById('preview');
-          preview.style.display = "none"
-        }
-      </script>
-      <style>
-        #preview {
-          max-width: 300px;
-          max-height: 300px;
-
-        }
-
-        .message {
-          margin-bottom: 10px;
-        }
-
-        .message-content {
-          margin: 0;
-        }
-
-        .message-image-container {
-          display: flex;
-          justify-content: center;
-          margin: auto;
-
-
-        }
-
-        .message-video-container {
-
-          display: flex;
-          justify-content: center;
-          margin: auto;
-
-        }
-
-        .message-image {
-          max-width: 10rem;
-          height: auto;
-
-        }
-
-        .message-video {
-          max-width: 10rem;
-          height: auto;
-        }
-
-        .message-info {
-          display: flex;
-          align-items: center;
-        }
-
-
-        .fa-check-double {
-          color: green;
-        }
-      </style>
-
-      <script>
-
-        function toggleImageSize(image) {
-          image.classList.toggle('full-size');
-          if (image.classList.contains('full-size')) {
-            image.style.width = '100%';
-          } else {
-            image.style.width = '10rem';
-          }
-
-        }
-      </script>
-
-      <script>
-        const inputField = document.getElementById("contents");
-        const typingIndicator = document.querySelector(".typing-indicator");
-        let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
-        let typingTimeout;
-
-        // Clear the isTyping value from local storage on page load
-        localStorage.removeItem("isTyping");
-
-        inputField.addEventListener("keyup", function (event) {
-          clearTimeout(typingTimeout);
-          typingTimeout = setTimeout(stopTyping, 600);
-        });
-
-        inputField.addEventListener("keydown", function (event) {
-          if (!isTyping && event.key !== "Enter") {
-            startTyping();
-          }
-          clearTimeout(typingTimeout);
-        });
-
-        function startTyping() {
-          isTyping = true;
-          localStorage.setItem("isTyping", "true");
-          typingIndicator.style.display = "inline-block";
-        }
-
-        function stopTyping() {
-          isTyping = false;
-          localStorage.removeItem("isTyping");
-          typingIndicator.style.display = "none";
-        }
-      </script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script>
-        // Client-side code
-        const socket = io();
-
-        const messageForm = document.getElementById('message-form');
-        const contentInput = document.getElementById('contents');
-        const senderInput = document.getElementById('sender').value;
-        const senderIdInput = document.getElementById('senderid').value;
-        const fileInput = document.getElementById('file');
-
-        messageForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-
-          const content = contentInput.value.trim();
-          const file = fileInput.files[0];
-
-          if (content || file) {
-            const reader = new FileReader();
-
-            reader.onload = () => {
-              const message = {
-                sender: senderInput,
-                content: content,
-                senderid: senderIdInput,
-                image: file && file.type.startsWith('image/') ? reader.result : null,
-                video: file && file.type.startsWith('video/') ? reader.result : null,
-              };
-
-              socket.emit('chat message', message);
-              contentInput.value = '';
-              fileInput.value = ''; // Clear the file input after sending
-            };
+            reader.onloadend = function () {
+              preview.src = reader.result;
+            }
 
             if (file) {
-              reader.readAsDataURL(file); // Convert file to Base64
+              reader.readAsDataURL(file);
             } else {
-              reader.onload(); // Trigger the onload event when no file is selected
+              preview.src = "";
             }
           }
-        });
 
-        socket.on('chat message', (message) => {
-          appendMessage(message);
-        });
+          function image() {
+            var preview = document.getElementById('preview');
+            preview.style.display = "none"
+          }
+        </script>
+        <style>
+          #preview {
+            max-width: 300px;
+            max-height: 300px;
 
-        const currentDate = new Date();
-        const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+          }
 
-        // Format the temporary date and time
-        const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
-        const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+          .message {
+            margin-bottom: 10px;
+          }
 
-        function appendMessage(message) {
-          const messagesDiv = document.getElementById('messages');
-          const messageDiv = document.createElement('div');
-          messageDiv.classList.add('message');
-          messageDiv.innerHTML = `
+          .message-content {
+            margin: 0;
+          }
+
+          .message-image-container {
+            display: flex;
+            justify-content: center;
+            margin: auto;
+
+
+          }
+
+          .message-video-container {
+
+            display: flex;
+            justify-content: center;
+            margin: auto;
+
+          }
+
+          .message-image {
+            max-width: 10rem;
+            height: auto;
+
+          }
+
+          .message-video {
+            max-width: 10rem;
+            height: auto;
+          }
+
+          .message-info {
+            display: flex;
+            align-items: center;
+          }
+
+
+          .fa-check-double {
+            color: green;
+          }
+        </style>
+
+        <script>
+
+          function toggleImageSize(image) {
+            image.classList.toggle('full-size');
+            if (image.classList.contains('full-size')) {
+              image.style.width = '100%';
+            } else {
+              image.style.width = '10rem';
+            }
+
+          }
+        </script>
+
+        <script>
+          const inputField = document.getElementById("contents");
+          const typingIndicator = document.querySelector(".typing-indicator");
+          let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
+          let typingTimeout;
+
+          // Clear the isTyping value from local storage on page load
+          localStorage.removeItem("isTyping");
+
+          inputField.addEventListener("keyup", function (event) {
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(stopTyping, 600);
+          });
+
+          inputField.addEventListener("keydown", function (event) {
+            if (!isTyping && event.key !== "Enter") {
+              startTyping();
+            }
+            clearTimeout(typingTimeout);
+          });
+
+          function startTyping() {
+            isTyping = true;
+            localStorage.setItem("isTyping", "true");
+            typingIndicator.style.display = "inline-block";
+          }
+
+          function stopTyping() {
+            isTyping = false;
+            localStorage.removeItem("isTyping");
+            typingIndicator.style.display = "none";
+          }
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+          // Client-side code
+          const socket = io();
+
+          const messageForm = document.getElementById('message-form');
+          const contentInput = document.getElementById('contents');
+          const senderInput = document.getElementById('sender').value;
+          const senderIdInput = document.getElementById('senderid').value;
+          const fileInput = document.getElementById('file');
+
+          messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const content = contentInput.value.trim();
+            const file = fileInput.files[0];
+
+            if (content || file) {
+              const reader = new FileReader();
+
+              reader.onload = () => {
+                const message = {
+                  sender: senderInput,
+                  content: content,
+                  senderid: senderIdInput,
+                  image: file && file.type.startsWith('image/') ? reader.result : null,
+                  video: file && file.type.startsWith('video/') ? reader.result : null,
+                };
+
+                socket.emit('chat message', message);
+                contentInput.value = '';
+                fileInput.value = ''; // Clear the file input after sending
+              };
+
+              if (file) {
+                reader.readAsDataURL(file); // Convert file to Base64
+              } else {
+                reader.onload(); // Trigger the onload event when no file is selected
+              }
+            }
+          });
+
+          socket.on('chat message', (message) => {
+            appendMessage(message);
+          });
+
+          const currentDate = new Date();
+          const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+
+          // Format the temporary date and time
+          const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
+          const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+
+          function appendMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.innerHTML = `
         <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
         <div class="message-info">
           <div class="message-image-container">
@@ -836,15 +869,15 @@
         </div>
   `;
 
-          messagesDiv.appendChild(messageDiv);
+            messagesDiv.appendChild(messageDiv);
 
 
-        }
+          }
 
-      </script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+          crossorigin="anonymous"></script>
 
 </body>
 

@@ -6,6 +6,7 @@ const io = require('socket.io')(http);
 const path = require('path');
 const multer = require('multer')
 const cacheControl = require('cache-control')
+const connectMongoDbSession = require('connect-mongodb-session');
 const dotenv = require('dotenv');
 const fs = require('fs');
 dotenv.config({ path: path.join(__dirname, "config/config.env") });
@@ -31,6 +32,14 @@ mongoose.connect('mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mo
   });
 
 
+const MongoDbStore = connectMongoDbSession(session);
+const defaultDbUri = "mongodb+srv://nikhilscaria3:uzlfuyj2RfRbDdEa@global.lzwsydh.mongodb.net/ChatApp?retryWrites=true&w=majority";
+const store = new MongoDbStore({
+  uri: process.env.DB_LOCAL_URI || defaultDbUri,
+  collection: 'sessions'
+});
+
+
 app.use(express.urlencoded({ extended: true }));
 // const messageroutes = require('./routes/messageRoutes')
 // app.use('/', messageroutes)
@@ -47,10 +56,21 @@ app.use(express.urlencoded({ extended: false }));
 const nodemailer = require('nodemailer');
 
 app.use(session({
+  name: 'loggedIn',
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
+  store: store,
+  cookie: {
+    secure: false, // Set it to true if using HTTPS
+    maxAge: 24 * 60 * 60 * 1000, // Session expiration time
+  }
 }));
+
+
+store.on('error', function (error) {
+  console.log(error);
+});
 
 app.use(function (req, res, next) {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -202,6 +222,7 @@ app.post('/', async (req, res) => {
         req.session.username = user.name;
         req.session.loggedIn = true;
         req.session.session = user._id;
+        req.session.loggedIn = true;
         console.log("session", req.session.session);
 
         // Redirect to the homepage or any other desired page
@@ -221,7 +242,7 @@ app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
   const userSession = res.locals.userSession
   const users = await chatuser.find({ users: userSession });
   console.log(users);
-  res.render('chat', { users, userSession });
+  res.render('mainpage', { users, userSession });
 });
 
 // Assuming you have imported the necessary models and libraries
@@ -260,14 +281,54 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
 
     // Handle deletion of users
     if (req.query.deleteuser_id) {
-      const deletedUser = await chatuser.findByIdAndDelete(req.query.deleteuser_id);
+      const deletedUser = await chatuser.deleteOne({ identifier: req.query.deleteuser_id });
       if (deletedUser) {
-        const senderId = deletedUser.senderid;
+        return res.redirect("/homepage");
+      } else {
+        console.log("error");
+      }
+    }
+
+    if (req.query.deleteimage_id) {
+      const deletedUser = await chatuser.updateOne({ identifier: req.query.deleteimage_id }, {
+        image: ""
+      });
+
+      if (deletedUser) {
+        const senderId = req.query.deleteimage_id
         return res.redirect(`/chat?identifier=${senderId}`);
       } else {
         console.log("error");
       }
     }
+
+    if (req.query.deleteimage_id) {
+      const deletedUser = await chatuser.updateOne({ identifier: req.query.deleteimage_id }, {
+        image: ""
+      });
+
+      if (deletedUser) {
+        const senderId = req.query.deleteimage_id
+        return res.redirect(`/chat?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+    if (req.query.deleteallmessage) {
+      const deletedUser = await Message.deleteMany({ senderid: req.query.deleteallmessage })
+
+      if (deletedUser) {
+        const senderId = req.query.deleteallmessage
+        return res.redirect(`/chat?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+
+
+
 
     const formattedTimes = messages.map((message) => {
       const formattedTime = message.createdAt.toLocaleString('en-IN', {
@@ -288,6 +349,8 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
 app.post('/chat', setUserId, upload.single('image'), goToLoginIfNotAuth, async (req, res) => {
   try {
     const { id } = req.body;
@@ -318,6 +381,107 @@ app.post('/chat', setUserId, upload.single('image'), goToLoginIfNotAuth, async (
   }
 });
 
+
+
+
+app.get('/receiverchat', setUserId, goToLoginIfNotAuth, async (req, res) => {
+  try {
+    const userSession = res.locals.userSession;
+
+    const { identifier } = req.query;
+    const messages = await Message.find({ senderid: identifier });
+    const users = await chatuser.find({ identifier: identifier });
+
+    // Check if files were uploade
+
+    // Handle deletion of messages
+    if (req.query.delete_id) {
+      const deletedMessage = await Message.findByIdAndDelete(req.query.delete_id);
+      if (deletedMessage) {
+        const senderId = deletedMessage.senderid;
+        return res.redirect(`/receiver?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+    // Handle deletion of users
+    if (req.query.deleteuser_id) {
+      const deletedUser = await chatuser.findByIdAndDelete(req.query.deleteuser_id);
+      if (deletedUser) {
+        const senderId = deletedUser.senderid;
+        return res.redirect(`/receiver?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+    if (req.query.deleteimage_id) {
+      const deletedUser = await chatuser.updateOne({ identifier: req.query.deleteimage_id }, {
+        image: ""
+      });
+
+      if (deletedUser) {
+        const senderId = req.query.deleteimage_id
+        return res.redirect(`/receiver?identifier=${senderId}`);
+      } else {
+        console.log("error");
+      }
+    }
+
+
+
+
+    const formattedTimes = messages.map((message) => {
+      const formattedTime = message.createdAt.toLocaleString('en-IN', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      });
+
+      const [day, time] = formattedTime.split(', ');
+      return { day, time };
+    });
+
+    console.log("formattedTimes:", formattedTimes);
+    res.render('chat', { identifier, messages, users, formattedTimes, userSession });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+app.post('/receiverchat', setUserId, upload.single('image'), goToLoginIfNotAuth, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const userSession = res.locals.userSession;
+    console.log("id", id);
+
+    // Check if files were uploaded
+    if (req.file) {
+      const photo = {
+        title: req.file.originalname,
+        filepath: req.file.filename
+      };
+
+      console.log("phots", photo);
+      // Update the user with the new photo
+      await chatuser.updateOne({ identifier: id }, { image: photo });
+    } else {
+      // Handle the case when no files were uploaded
+      console.log("error");
+    }
+
+
+    req.session.message = 'Edited Successfully';
+    return res.redirect(`/receiver?identifier=${id}`);
+  } catch (error) {
+    console.error(error);
+    res.render('error');
+  }
+});
 
 // Rest of the code
 
