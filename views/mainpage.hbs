@@ -480,30 +480,54 @@
                 <i class="fa-solid fa-user-plus"></i>
               </a>
             </li>
-            {{!-- <li class="nav-item">
-              <form action="/chat" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="id" value="{{identifier}}">
-                <div class="input-with-icon">
-                  <label for="file" class="file-label">
-                    <i class="fas fa-upload"></i>
-                    <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
-                  </label>
-                  <input id="file" type="file" name="image" accept="image/*" class="input-field"
-                    onchange="displayFileName(this)">
-                </div>
-
-
-                <button type="submit" class="p-1">
-                  <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
-                </button>
-
-                <a href="/chat?deleteimage_id={{identifier}}"><i class="fa-solid fa-trash"
-                    style="color: #186bfb;"></i></a>
-
-              </form>
-            </li> --}}
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Guide
+              </button>
+            </li>
           </ul>
         </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <img src="/chatApp-logo.png" alt="ChatApp Logo" width="80" height="80">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <h2 class="modal-title">ChatApp - Connect and Chat Worldwide</h2>
+                <p class="modal-description">
+                  Welcome to ChatApp! We're glad to have you here. Our platform allows you to connect and chat with
+                  friends from anywhere in the world.
+                </p>
+                <h4>How to Get Started:</h4>
+                <ol>
+                  <li>Navigate to the ChatApp homepage.</li>
+                  <li>In the menu bar, click on the human plus icon to add friends.</li>
+                  <li>You have two options to add friends: via email or mobile (currently unavailable).</li>
+                  <li>To add a friend via email, enter their email address in the provided field and click "Add Friend".
+                  </li>
+                  <li>An email will be sent to your friend with a link to start the chat.</li>
+                  <li>Your friend can click on the link to join the chat.</li>
+                  <li>Once both users have accessed the chat link, they can start chatting and enjoying their
+                    conversation.</li>
+                </ol>
+                <p class="modal-note">
+                  Please note that the mobile option for adding friends will be available in the future. We apologize
+                  for any inconvenience caused by its temporary unavailability.
+                </p>
+                <p class="modal-note">
+                  If you have any questions or need assistance, feel free to ask. Enjoy your chat experience on ChatApp!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
 
 
         <script>
@@ -575,256 +599,255 @@
           </div>
         </div>
       </div>
-    
-        <div class="containers">
-       
-          <section id="content">
+
+      <div class="containers">
+
+        <section id="content">
 
 
-            <div id="messages" style="overflow-y: scroll; height: 468px;">
-          
-              <div class="message">
-                <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
-                {{#if this.image}}
-                <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
-                {{/if}}
-                {{#if this.video}}
-                <video controls style="width: 10rem;">
-                  <source src="{{this.video}}" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                {{/if}}
-                {{#with (lookup ../formattedTimes @index)}}
-                <div class="message-info">
-                  <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash"
-                      style="color: #186bfb;"></i></a>
-                  <p>{{day}}, {{time}}</p>
-                  <i class="fa-solid fa-check-double tick"></i>
-                </div>
-                {{/with}}
+          <div id="messages" style="overflow-y: scroll; height: 468px;">
+
+            <div class="message">
+              <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
+              {{#if this.image}}
+              <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
+              {{/if}}
+              {{#if this.video}}
+              <video controls style="width: 10rem;">
+                <source src="{{this.video}}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              {{/if}}
+              {{#with (lookup ../formattedTimes @index)}}
+              <div class="message-info">
+                <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+                <p>{{day}}, {{time}}</p>
+                <i class="fa-solid fa-check-double tick"></i>
               </div>
-            
+              {{/with}}
             </div>
 
-            <form id="message-form" action="" enctype="multipart/form-data">
-              <div class="disable d-flex" style="width: 6rem;">
-                
-              </div>
-              <div class="input-with-icon">
-                <label for="file" class="file-label">
-                  <i class="fas fa-file"></i>
-                  <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
-                </label>
-                <input id="file" type="file" onchange="previewImage()" accept="image/*, video/*" class="input-field">
-              </div>
+          </div>
 
-              <img id="preview" src="#" alt="">
-              <input id="contents" type="text" placeholder="Type your message">
-              <button type="submit" onclick="image()" class="glow-button">
-                <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
-              </button>
-            </form>
+          <form id="message-form" action="" enctype="multipart/form-data">
+            <div class="disable d-flex" style="width: 6rem;">
 
-            <div class="typing-indicator">
-              <span>Typing</span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
             </div>
-          </section>
-        </div>
+            <div class="input-with-icon">
+              <label for="file" class="file-label">
+                <i class="fas fa-file"></i>
+                <!-- Replace "fas fa-file" with the desired Font Awesome icon class for file -->
+              </label>
+              <input id="file" type="file" onchange="previewImage()" accept="image/*, video/*" class="input-field">
+            </div>
+
+            <img id="preview" src="#" alt="">
+            <input id="contents" type="text" placeholder="Type your message">
+            <button type="submit" onclick="image()" class="glow-button">
+              <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
+            </button>
+          </form>
+
+          <div class="typing-indicator">
+            <span>Typing</span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </section>
+      </div>
 
 
-        <script>
-          function changeTheme(theme) {
-            // Remove existing theme classes
-            document.body.classList.remove('default', 'dark', 'light', 'blue', 'green', 'purple');
+      <script>
+        function changeTheme(theme) {
+          // Remove existing theme classes
+          document.body.classList.remove('default', 'dark', 'light', 'blue', 'green', 'purple');
 
-            // Apply the selected theme class
-            document.body.classList.add(theme);
-          }
-        </script>
+          // Apply the selected theme class
+          document.body.classList.add(theme);
+        }
+      </script>
 
-        <script>
-          function previewImage() {
-            var preview = document.getElementById('preview');
-            var file = document.getElementById('file').files[0];
-            var reader = new FileReader();
+      <script>
+        function previewImage() {
+          var preview = document.getElementById('preview');
+          var file = document.getElementById('file').files[0];
+          var reader = new FileReader();
 
-            reader.onloadend = function () {
-              preview.src = reader.result;
-            }
-
-            if (file) {
-              reader.readAsDataURL(file);
-            } else {
-              preview.src = "";
-            }
-          }
-
-          function image() {
-            var preview = document.getElementById('preview');
-            preview.style.display = "none"
-          }
-        </script>
-        <style>
-          #preview {
-            max-width: 300px;
-            max-height: 300px;
-
-          }
-
-          .message {
-            margin-bottom: 10px;
+          reader.onloadend = function () {
+            preview.src = reader.result;
           }
 
-          .message-content {
-            margin: 0;
+          if (file) {
+            reader.readAsDataURL(file);
+          } else {
+            preview.src = "";
+          }
+        }
+
+        function image() {
+          var preview = document.getElementById('preview');
+          preview.style.display = "none"
+        }
+      </script>
+      <style>
+        #preview {
+          max-width: 300px;
+          max-height: 300px;
+
+        }
+
+        .message {
+          margin-bottom: 10px;
+        }
+
+        .message-content {
+          margin: 0;
+        }
+
+        .message-image-container {
+          display: flex;
+          justify-content: center;
+          margin: auto;
+
+
+        }
+
+        .message-video-container {
+
+          display: flex;
+          justify-content: center;
+          margin: auto;
+
+        }
+
+        .message-image {
+          max-width: 10rem;
+          height: auto;
+
+        }
+
+        .message-video {
+          max-width: 10rem;
+          height: auto;
+        }
+
+        .message-info {
+          display: flex;
+          align-items: center;
+        }
+
+
+        .fa-check-double {
+          color: green;
+        }
+      </style>
+
+      <script>
+
+        function toggleImageSize(image) {
+          image.classList.toggle('full-size');
+          if (image.classList.contains('full-size')) {
+            image.style.width = '100%';
+          } else {
+            image.style.width = '10rem';
           }
 
-          .message-image-container {
-            display: flex;
-            justify-content: center;
-            margin: auto;
+        }
+      </script>
 
+      <script>
+        const inputField = document.getElementById("contents");
+        const typingIndicator = document.querySelector(".typing-indicator");
+        let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
+        let typingTimeout;
 
+        // Clear the isTyping value from local storage on page load
+        localStorage.removeItem("isTyping");
+
+        inputField.addEventListener("keyup", function (event) {
+          clearTimeout(typingTimeout);
+          typingTimeout = setTimeout(stopTyping, 600);
+        });
+
+        inputField.addEventListener("keydown", function (event) {
+          if (!isTyping && event.key !== "Enter") {
+            startTyping();
           }
+          clearTimeout(typingTimeout);
+        });
 
-          .message-video-container {
+        function startTyping() {
+          isTyping = true;
+          localStorage.setItem("isTyping", "true");
+          typingIndicator.style.display = "inline-block";
+        }
 
-            display: flex;
-            justify-content: center;
-            margin: auto;
-
-          }
-
-          .message-image {
-            max-width: 10rem;
-            height: auto;
-
-          }
-
-          .message-video {
-            max-width: 10rem;
-            height: auto;
-          }
-
-          .message-info {
-            display: flex;
-            align-items: center;
-          }
-
-
-          .fa-check-double {
-            color: green;
-          }
-        </style>
-
-        <script>
-
-          function toggleImageSize(image) {
-            image.classList.toggle('full-size');
-            if (image.classList.contains('full-size')) {
-              image.style.width = '100%';
-            } else {
-              image.style.width = '10rem';
-            }
-
-          }
-        </script>
-
-        <script>
-          const inputField = document.getElementById("contents");
-          const typingIndicator = document.querySelector(".typing-indicator");
-          let isTyping = localStorage.getItem("isTyping") === "true" ? true : false;
-          let typingTimeout;
-
-          // Clear the isTyping value from local storage on page load
+        function stopTyping() {
+          isTyping = false;
           localStorage.removeItem("isTyping");
+          typingIndicator.style.display = "none";
+        }
+      </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        // Client-side code
+        const socket = io();
 
-          inputField.addEventListener("keyup", function (event) {
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(stopTyping, 600);
-          });
+        const messageForm = document.getElementById('message-form');
+        const contentInput = document.getElementById('contents');
+        const senderInput = document.getElementById('sender').value;
+        const senderIdInput = document.getElementById('senderid').value;
+        const fileInput = document.getElementById('file');
 
-          inputField.addEventListener("keydown", function (event) {
-            if (!isTyping && event.key !== "Enter") {
-              startTyping();
-            }
-            clearTimeout(typingTimeout);
-          });
+        messageForm.addEventListener('submit', (e) => {
+          e.preventDefault();
 
-          function startTyping() {
-            isTyping = true;
-            localStorage.setItem("isTyping", "true");
-            typingIndicator.style.display = "inline-block";
-          }
+          const content = contentInput.value.trim();
+          const file = fileInput.files[0];
 
-          function stopTyping() {
-            isTyping = false;
-            localStorage.removeItem("isTyping");
-            typingIndicator.style.display = "none";
-          }
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-          // Client-side code
-          const socket = io();
+          if (content || file) {
+            const reader = new FileReader();
 
-          const messageForm = document.getElementById('message-form');
-          const contentInput = document.getElementById('contents');
-          const senderInput = document.getElementById('sender').value;
-          const senderIdInput = document.getElementById('senderid').value;
-          const fileInput = document.getElementById('file');
-
-          messageForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const content = contentInput.value.trim();
-            const file = fileInput.files[0];
-
-            if (content || file) {
-              const reader = new FileReader();
-
-              reader.onload = () => {
-                const message = {
-                  sender: senderInput,
-                  content: content,
-                  senderid: senderIdInput,
-                  image: file && file.type.startsWith('image/') ? reader.result : null,
-                  video: file && file.type.startsWith('video/') ? reader.result : null,
-                };
-
-                socket.emit('chat message', message);
-                contentInput.value = '';
-                fileInput.value = ''; // Clear the file input after sending
+            reader.onload = () => {
+              const message = {
+                sender: senderInput,
+                content: content,
+                senderid: senderIdInput,
+                image: file && file.type.startsWith('image/') ? reader.result : null,
+                video: file && file.type.startsWith('video/') ? reader.result : null,
               };
 
-              if (file) {
-                reader.readAsDataURL(file); // Convert file to Base64
-              } else {
-                reader.onload(); // Trigger the onload event when no file is selected
-              }
+              socket.emit('chat message', message);
+              contentInput.value = '';
+              fileInput.value = ''; // Clear the file input after sending
+            };
+
+            if (file) {
+              reader.readAsDataURL(file); // Convert file to Base64
+            } else {
+              reader.onload(); // Trigger the onload event when no file is selected
             }
-          });
+          }
+        });
 
-          socket.on('chat message', (message) => {
-            appendMessage(message);
-          });
+        socket.on('chat message', (message) => {
+          appendMessage(message);
+        });
 
-          const currentDate = new Date();
-          const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
+        const currentDate = new Date();
+        const temporaryDate = new Date(); // Example: June 28, 2023, 8:36:00
 
-          // Format the temporary date and time
-          const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
-          const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
+        // Format the temporary date and time
+        const options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric', hour12: true };
+        const temporaryTime = temporaryDate.toLocaleString('en-IN', options);
 
-          function appendMessage(message) {
-            const messagesDiv = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.innerHTML = `
+        function appendMessage(message) {
+          const messagesDiv = document.getElementById('messages');
+          const messageDiv = document.createElement('div');
+          messageDiv.classList.add('message');
+          messageDiv.innerHTML = `
         <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
         <div class="message-info">
           <div class="message-image-container">
@@ -839,15 +862,15 @@
         </div>
   `;
 
-            messagesDiv.appendChild(messageDiv);
+          messagesDiv.appendChild(messageDiv);
 
 
-          }
+        }
 
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-          crossorigin="anonymous"></script>
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 
 </body>
 
