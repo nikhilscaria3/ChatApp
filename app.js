@@ -239,10 +239,24 @@ app.post('/', async (req, res) => {
 });
 
 app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
-  const userSession = res.locals.userSession
-  const users = await chatuser.find({ users: userSession });
-  console.log(users);
-  res.render('mainpage', { users, userSession });
+  try {
+    const userSession = res.locals.userSession;
+
+    // Update the status of all users to "offline" except the current user
+    await chatuser.updateMany({ identifier: { $ne: userSession.identifier } }, { status: "offline" });
+    await chatuser.updateMany({ identifier: { $ne: userSession.identifier } }, { receiverstatus: "offline" });
+    // Update the status of the current user to "online"
+    await chatuser.updateOne({ identifier: userSession.identifier }, { status: "online" });
+
+    // Retrieve the list of users
+    const users = await chatuser.find({ users: userSession });
+
+    console.log(users);
+    res.render('mainpage', { users, userSession });
+  } catch (error) {
+    console.error(error);
+    res.render('error');
+  }
 });
 
 // Assuming you have imported the necessary models and libraries
@@ -265,6 +279,12 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
     const { identifier } = req.query;
     const messages = await Message.find({ senderid: identifier });
     const users = await chatuser.find({ identifier: identifier });
+
+    if (identifier) {
+      await chatuser.updateOne({ identifier: identifier }, { status: "online" });
+    } else {
+      await chatuser.updateOne({ identifier: identifier }, { status: "offline" });
+    }
 
     // Check if files were uploade
 
@@ -326,8 +346,18 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
       }
     }
 
+    // Assuming you have a connection to your MongoDB and the 'chatuser' collection
 
+    // Fetch only the 'receiverstatus' field from the 'chatuser' collection
+    const receiverStatusList = await chatuser.find({}, { receiverstatus: 1 });
 
+    // Iterate over the receiver status list and log the values
+    let receiverstatus = ""
+
+    receiverStatusList.forEach((user) => {
+      receiverstatus += user.receiverstatus
+      console.log(receiverstatus);
+    });
 
 
     const formattedTimes = messages.map((message) => {
@@ -343,7 +373,7 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
     });
 
     console.log("formattedTimes:", formattedTimes);
-    res.render('chat', { identifier, messages, users, formattedTimes, userSession });
+    res.render('chat', { identifier,receiverstatus, messages, users, formattedTimes, userSession });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -392,6 +422,13 @@ app.get('/receiverchat', setUserId, goToLoginIfNotAuth, async (req, res) => {
     const messages = await Message.find({ senderid: identifier });
     const users = await chatuser.find({ identifier: identifier });
 
+
+    if (identifier) {
+      await chatuser.updateOne({ identifier: identifier }, { receiverstatus: "online" });
+    } else {
+      // Handle the case when no files were uploaded
+      await chatuser.updateOne({ identifier: identifier }, { receiverstatus: "offline" });
+    }
     // Check if files were uploade
 
     // Handle deletion of messages

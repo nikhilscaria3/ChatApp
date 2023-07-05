@@ -548,8 +548,12 @@
           <ul class="navbar-nav ms-auto" id="navbar-nav">
             {{#each users}}
             <li class="active" style="display: flex; width: 29rem;">
-              <a href="/chat?identifier={{this.identifier}}" class="nav-link ">
+              <a href="/chat?identifier={{this.identifier}}" class="">
+                {{#if this.mobile}}
                 <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
+                {{else}}
+                <span class="text cart-link">{{this.name}} :<br>{{this.email}} </span>
+                {{/if}}
               </a>
               <a href="/chat?deleteuser_id={{this._id}}">
                 <i class="fa-solid fa-trash nav-link" style="color: #186bfb;"></i>
@@ -569,7 +573,11 @@
             {{#each users}}
             <li class="active" style="display: flex; width: 29rem;">
               <a href="/chat?identifier={{this.identifier}}" class="">
+                {{#if this.mobile}}
                 <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
+                {{else}}
+                <span class="text cart-link">{{this.name}} :<br>{{this.email}} </span>
+                {{/if}}
               </a>
               <a href="/chat?deleteuser_id={{this._id}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
             </li>
@@ -597,8 +605,7 @@
 
 
                 <label for="mobile" class="form-label">Mobile</label>
-                <input type="tel" name="mobile" id="mobile" class="form-control" onkeyup="validateEmail()"
-                  disabled>
+                <input type="tel" name="mobile" id="mobile" class="form-control" onkeyup="validateEmail()" disabled>
                 <small class="form-text text-muted">Sorry, the mobile option is currently unavailable. Please use
                   Email instead.</small>
 

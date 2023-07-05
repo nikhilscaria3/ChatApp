@@ -476,7 +476,7 @@
               </div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="fa-solid fa-user-plus"></i>
               </a>
             </li>
@@ -563,16 +563,21 @@
             {{#each users}}
             <li class="active" style="display: flex; width: 29rem;">
               <a href="/chat?identifier={{this.identifier}}" class="">
+                {{#if this.mobile}}
                 <span class="text cart-link">{{this.name}}:-:-:{{this.mobile}} </span>
+                {{else}}
+                <span class="text cart-link">{{this.name}} :<br>{{this.email}} </span>
+                {{/if}}
               </a>
-              <a href="/chat?deleteuser_id={{this.identifier}}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+              <a href="/chat?deleteuser_id={{this.identifier}}"><i class="fa-solid fa-trash"
+                  style="color: #186bfb;"></i></a>
             </li>
             {{/each}}
           </ul>
         </section>
       </div>
 
-      <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -616,15 +621,29 @@
                 <p><strong>{{this.sender}}:</strong> {{this.content}}</p>
                 {{#if this.image}}
                 <img src="{{this.image}}" style="width:10rem; cursor: pointer;" onclick="toggleImageSize(this)">
+
                 {{/if}}
+
                 {{#if this.video}}
                 <video controls style="width: 10rem;">
                   <source src="{{this.video}}" type="video/mp4">
                   Your browser does not support the video tag.
                 </video>
+              
                 {{/if}}
+             
                 {{#with (lookup ../formattedTimes @index)}}
                 <div class="message-info">
+                  {{#if ../this.image}}
+
+                  <a onclick="downloadFile('{{../this.image}}')"><i class="fas fa-download"></i></a>
+                  {{/if}}
+                  {{#if ../this.video}}
+                  <a onclick="downloadFile('{{../this.video}}')"><i class="fas fa-download"></i></a>
+                  {{/if}}
+
+
+
                   <a href="/chat?delete_id={{../this._id}}"><i class="fa-solid fa-trash"
                       style="color: #186bfb;"></i></a>
                   <p>{{day}}, {{time}}</p>
@@ -653,6 +672,9 @@
               <button type="submit" onclick="image()" class="glow-button">
                 <i class="fa-regular fa-paper-plane" style="color: #4f73b0;"></i>
               </button>
+              {{#each users}}
+              <span>{{this.receiverstatus}}</span>
+              {{/each}}
             </form>
 
             <div class="typing-indicator">
@@ -664,7 +686,26 @@
           </section>
         </div>
 
+        <script>
+          function downloadFile(fileUrl) {
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = getFileNameFromUrl(fileUrl);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
 
+          function getFileNameFromUrl(url) {
+            const filename = url.substring(url.lastIndexOf('/') + 1);
+            return filename;
+          }
+
+
+
+
+
+        </script>
         <script>
           function changeTheme(theme) {
             // Remove existing theme classes
@@ -855,19 +896,21 @@
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.innerHTML = `
-        <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
-        <div class="message-info">
-          <div class="message-image-container">
-            ${message.image && message.image.startsWith('data:image/') ? `<img src="${message.image}" alt="Image"  class="message-image">` : ''}
-          </div>
-          <div class="message-video-container">
-            ${message.video ? `<video src="${message.video}" class="message-video" controls></video>` : ''}
-          </div>
-          <a href="/chat?delete_id=${message._id}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
-          <span class="temporary-time">${temporaryTime}</span>
-          <i class="fa-solid fa-check-double tick"></i>
-        </div>
-  `;
+  <p class="message-content"><strong>${message.sender}:</strong> ${message.content}</p>
+  <div class="message-info">
+    <div class="message-image-container">
+      ${message.image && message.image.startsWith('data:image/') ? `<img src="${message.image}" alt="Image"  class="message-image">` : ''}
+      ${message.image ? `<a href="${message.image}" style="margin: auto;" download><i class="fas fa-download"></i></a>` : ''}
+    </div>
+    <div class="message-video-container">
+      ${message.video ? `<video src="${message.video}" class="message-video" controls></video>` : ''}
+      ${message.video ? `<a href="${message.video}" style="margin: auto; color:black;" download><i class="fas fa-download"></i></a>` : ''}
+    </div>
+    <a href="/chat?delete_id=${message._id}"><i class="fa-solid fa-trash" style="color: #186bfb;"></i></a>
+    <span class="temporary-time">${temporaryTime}</span>
+    <i class="fa-solid fa-check-double tick"></i>
+  </div>
+`;
 
             messagesDiv.appendChild(messageDiv);
 

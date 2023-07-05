@@ -28,8 +28,15 @@ const chataddSchema = new mongoose.Schema({
   image: {
     title: { type: String },
     filepath: { type: String }
-  }
-
+  },
+  status: {
+    type: String,
+    default: "offline",
+  },
+  receiverstatus: {
+    type: String,
+    default: "offline",
+  },
 });
 
 const chatuser = mongoose.model('chatuser', chataddSchema);
