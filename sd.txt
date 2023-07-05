@@ -1,0 +1,12 @@
+Welcome to ChatApp! We're glad to have you here. Our platform allows you to connect and chat with friends from anywhere in the world. Let's walk through the steps to add friends and start a chat.
+
+Navigate to the ChatApp homepage.
+In the menu bar, you'll find a human plus icon. Click on it to add friends.
+You have two options to add friends: via email or mobile. Unfortunately, please note that the mobile option is temporarily unavailable at the moment.
+To add a friend via email, enter their email address in the provided field and click "Add Friend".
+Once you've added a friend, an email will be sent to their registered email address with a link to start the chat.
+Your friend will receive the email notification and can click on the link to join the chat.
+Once both you and your friend have accessed the chat link, you can start chatting and enjoying your conversation.
+Please note that the mobile option for adding friends will be available in the future. We apologize for any inconvenience caused by its temporary unavailability. Stay tuned for updates and improvements to our platform.
+
+If you have any further questions or need assistance, feel free to ask. Enjoy your chat experience on ChatApp!
