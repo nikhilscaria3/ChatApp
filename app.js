@@ -180,40 +180,16 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Handle POST requests to '/home' for sign-up and login
+
 app.post('/', async (req, res) => {
-  const { name, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
-    // Find the user in the database by name
+    // Check if the user exists in the database by name
     const user = await User.findOne({ name });
 
-    if (!user) {
-      // User does not exist, proceed with sign-up
-
-      // Generate a salt for password hashing
-      const salt = await bcrypt.genSalt(10);
-
-      // Hash the password using bcrypt
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      // Create a new User document with hashed password
-      const newUser = new User({
-        name,
-        password: hashedPassword,
-      });
-
-      // Save the user to the database
-      await newUser.save();
-
-      // Set session variables for the newly signed up user
-      req.session.username = newUser.name;
-      req.session.message = "Successfully Registered"
-      // Redirect to the homepage or any other desired page
-      res.redirect('/');
-    } else {
+    if (user) {
       // User exists, proceed with login
-
       // Compare the provided password with the stored hashed password
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -222,21 +198,45 @@ app.post('/', async (req, res) => {
         req.session.username = user.name;
         req.session.loggedIn = true;
         req.session.session = user._id;
-        req.session.loggedIn = true;
         console.log("session", req.session.session);
-
         // Redirect to the homepage or any other desired page
-        res.redirect('/homepage');
+        return res.redirect('/homepage');
       } else {
-        req.session.message = 'Invalid Password or Username';
-        res.redirect('/');
+        req.session.message = 'Invalid Password';
+        return res.redirect('/');
       }
     }
+
+    // User does not exist, proceed with sign-up
+
+    // Generate a salt for password hashing
+    const salt = await bcrypt.genSalt(10);
+
+    // Hash the password using bcrypt
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create a new User document with name, email, and hashed password
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the user to the database
+    await newUser.save();
+
+    // Set session variables for the newly signed up user
+    req.session.username = newUser.name;
+    req.session.message = "Successfully Registered";
+
+    // Redirect to the homepage or any other desired page
+    res.redirect('/');
   } catch (error) {
     console.error('Error signing up or logging in:', error);
-    res.status(500).send('Internal Server Error');
+    res.render('error');
   }
 });
+
 
 app.get('/homepage', goToLoginIfNotAuth, setUserId, async (req, res) => {
   try {
@@ -373,7 +373,7 @@ app.get('/chat', setUserId, goToLoginIfNotAuth, async (req, res) => {
     });
 
     console.log("formattedTimes:", formattedTimes);
-    res.render('chat', { identifier,receiverstatus, messages, users, formattedTimes, userSession });
+    res.render('chat', { identifier, receiverstatus, messages, users, formattedTimes, userSession });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
