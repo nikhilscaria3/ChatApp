@@ -36,17 +36,18 @@
         }
 
         a {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #4CAF50;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
+            background-image: linear-gradient(to right, #66D9EF, #4A90E2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-image 0.3s;
         }
 
         a:hover {
-            background-color: #45a049;
+          background-image: linear-gradient(to right, #4A90E2, #66D9EF);
         }
     </style>
 </head>
@@ -56,6 +57,7 @@
         <h1>Invitation to Chat</h1>
         <p>Dear,</p>
         <p>You are invited to join a chat session. Click the link below to start chatting:</p>
+        <p>Reminder: If you are not logged in, please login first using the provided link before clicking the link.</p>
         <p><a href="http://16.170.250.38:4000/chat?identifier={{identifier}}">Start Chatting</a></p>
         <p>Thank you!</p>
     </div>
