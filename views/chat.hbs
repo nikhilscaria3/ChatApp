@@ -594,13 +594,17 @@
                 <input type="text" class="form-control" id="email" name="email" onkeyup="validateEmail()">
                 <span id="email-error"></span><br>
 
-               <label for="mobile" class="form-label">Mobile</label>
+                <label for="mobile" class="form-label">Mobile</label>
                 <input type="tel" name="mobile" id="mobile" class="form-control" onkeyup="validateEmail()" disabled>
                 <small class="form-text text-muted">Sorry, the mobile option is currently unavailable. Please use
                   Email instead.</small>
 
                 <span id="mobile-error"></span><br>
                 <input type="hidden" name="users" value="{{userSession}}">
+                <p style="display: flex;justify-content:center " class="mt-2">Note: The receiver get an email that
+                  include a link to
+                  start chat</p>
+
                 <input type="submit" value="Submit">
               </form>
             </div>
@@ -632,9 +636,9 @@
                   <source src="{{this.video}}" type="video/mp4">
                   Your browser does not support the video tag.
                 </video>
-              
+
                 {{/if}}
-             
+
                 {{#with (lookup ../formattedTimes @index)}}
                 <div class="message-info">
                   {{#if ../this.image}}
